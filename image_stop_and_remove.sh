@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /Users/service_one/StudioProjects/n-chatbot
+cd /Users/service_one/StudioProjects/n-chatbot-docker
 
 echo "Stopping and removing containers, networks, and volumes..."
 docker compose down --volumes --remove-orphans
