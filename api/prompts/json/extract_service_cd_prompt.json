@@ -1,0 +1,18 @@
+{
+    "name": null,
+    "input_variables": [
+        "service_cd_list",
+        "service_list",
+        "utterance"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    The following are a user's utterance and a list of available services. Select the one service that is most relevant to the user's utterance. If none of the services are relevant, respond with \"N/A\".\n\n    User Utterance: {utterance}\n\n    Service List:\n    {service_list}\n\n    Response Format: \n    {service_cd_list} \n    or  \"N/A\"\n   \n",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

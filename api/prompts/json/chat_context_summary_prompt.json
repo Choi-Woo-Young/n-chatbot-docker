@@ -1,0 +1,16 @@
+{
+    "name": null,
+    "input_variables": [
+        "context"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    Your task is to briefly summarize the context of the conversation. \n    Summarize the context in Korean, and keep the summary to a maximum of 3 sentences.\n    You must never include anything other than the context of the conversation below.\n\n    Example: \"\ube44\ubc00\ubc88\ud638 \ucd08\uae30\ud654 \ubc29\ubc95\uc5d0 \ub300\ud55c \ubb38\uc758\uc785\ub2c8\ub2e4.\"\n\n    Conversation Context: {context}\n    ",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

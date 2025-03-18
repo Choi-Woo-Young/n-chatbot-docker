@@ -1,0 +1,103 @@
+name: n-chatbot
+
+services:
+  # 챗봇용 RDB: PostgreSQL
+  pgdb:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nice1234!!
+      POSTGRES_DB: nchatbot
+    volumes:
+      - ./docker/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - internal_net
+
+  # RDB 관리용: Adminer (선택 사항)
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - internal_net
+
+  # 큐: Redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - internal_net
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - internal_net
+
+
+
+  nchatbot-front:
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+  # platform: linux/amd64
+    image: nchatbot-front:0.1
+    container_name: nchatbot-front
+    restart: always
+    ports:
+      - "3019:3019"
+    networks:
+      - internal_net
+
+
+  nchatbot-api:
+    #build:
+    #  context: ./nchatbot-api
+    #  dockerfile: Dockerfile
+  # platform: linux/amd64
+    image: nchatbot-api:0.1
+    container_name: nchatbot-api
+    restart: always
+    depends_on:
+      - pgdb
+      - redis
+    environment:
+      - FAST_API_MODE=development
+    ports:
+      - "8019:8019"
+    networks:
+      - internal_net
+
+
+  # 웹서버: Nginx (리버스 프록시 역할, Flowise로 트래픽 전달)
+  nginx:
+    image: nginx:latest
+    container_name: nginx_web
+    depends_on:
+      - nchatbot-front
+      - nchatbot-api
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    restart: always
+    networks:
+      - internal_net
+
+networks:
+  internal_net:
+    driver: bridge

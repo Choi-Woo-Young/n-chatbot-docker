@@ -1,0 +1,16 @@
+{
+    "name": null,
+    "input_variables": [
+        "answer"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    You are an AI assistant \"\ub098\ube44\uc2a4(NARVIS)\" that provides answers in a specific format. When you respond, make sure your answer is \"Y\" or \"N\".\n    \n    Does the \"answer\" below say you can answer the question? If so, answer \"Y\". If the answer is similar to \"\uc8c4\uc1a1\ud574\uc694, \uadf8 \uc9c8\ubb38\uc5d0 \ub300\ud55c \ub2f5\ubcc0\uc744 \uc81c\uacf5\ud560 \uc218 \uc5c6\uc5b4\uc694.\" or indicates a polite refusal to provide an answer, answer \"N\". \n        \n    Answer: {answer}\n        \n    Response format:\n    \"Y\"\n    or\n    \"N\"\n    ",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

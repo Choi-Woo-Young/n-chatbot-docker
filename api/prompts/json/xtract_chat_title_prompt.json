@@ -1,0 +1,16 @@
+{
+    "name": null,
+    "input_variables": [
+        "context"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    Your task is to extract the title of the conversation from the context of the conversation.\n    The title of the conversation must be one sentence in Korean.\n\n    Example: \"ITONE \ube44\ubc00\ubc88\ud638 \ucd08\uae30\ud654\"\n\n    Conversation Context: {context}\n    ",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

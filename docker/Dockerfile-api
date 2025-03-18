@@ -1,0 +1,61 @@
+FROM node:20-slim
+
+# 필요한 패키지 설치 (python3 기본 패키지 제외)
+RUN apt-get update && apt-get install -y \
+    libc6-dev \
+    make \
+    g++ \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    chromium \
+    wget \
+    libssl-dev \
+    libffi-dev \
+    zlib1g-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libgdbm-dev \
+    libbz2-dev \
+    liblzma-dev \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libxslt1-dev
+
+# Python 3.11.9 설치
+RUN wget https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz && \
+    tar -xf Python-3.11.9.tgz && \
+    cd Python-3.11.9 && \
+    ./configure --enable-optimizations && \
+    make -j $(nproc) && \
+    make altinstall && \
+    cd .. && rm -rf Python-3.11.9 Python-3.11.9.tgz
+
+# 환경 변수 설정
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV NODE_OPTIONS=--max-old-space-size=8192
+ENV FAST_API_MODE=development
+
+WORKDIR /usr/src
+
+# 소스 파일 복사
+COPY ./api ./api
+
+# Python 가상 환경 생성 및 requirements.txt 설치
+RUN python3.11 -m pip install --upgrade pip && \
+    python3.11 -m pip install --default-timeout=6000 -r ./api/requirements.txt
+
+COPY ./docker/python/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY ./huggingface_model /usr/src/huggingface_model
+
+ARG FAST_API_MODE=development
+ENV FAST_API_MODE=${FAST_API_MODE}
+
+EXPOSE 8019
+
+# 컨테이너 실행 시, 가상 환경을 활성화하고 uvicorn 서버 실행
+CMD ["sh", "-c", "python3.11 -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019"]

@@ -1,0 +1,16 @@
+{
+    "name": null,
+    "input_variables": [
+        "context"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    Your mission is to extract up to 5 key keywords from the context of the conversation.\n    The key keyword must be Korean.\n    If there are multiple keywords, separate them by the \"/\" symbol.\n    You must never include anything other than the context of the conversation below.\n\n    Example: \"ITONE/\ube44\ubc00\ubc88\ud638/\ucd08\uae30\ud654\"\n\n    Conversation Context: {context}\n    ",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

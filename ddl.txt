@@ -1,0 +1,193 @@
+
+CREATE TABLE code_group (
+		code_group_id VARCHAR(16) PRIMARY KEY, -- 코드 그룹 ID, 기본 키
+		code_group_name VARCHAR(255), -- 코드 그룹 이름
+		code_group_desc VARCHAR(255), -- 코드 그룹 설명
+		code_group_order FLOAT, -- 코드 그룹 정렬 순서
+		code_group_use_yn BOOLEAN, -- 코드 그룹 사용 여부
+		created_by BIGINT, -- 등록자 ID
+		created_time TIMESTAMP, -- 등록 일시
+		modified_by BIGINT, -- 수정자 ID
+		last_modified_time TIMESTAMP, -- 수정 일시
+		delete_yn BOOLEAN -- 삭제 여부
+);
+
+CREATE TABLE code (
+		code_id VARCHAR(16) PRIMARY KEY, -- 코드 ID, 기본 키
+		code_group_id VARCHAR(16) REFERENCES code_group(code_group_id) ON DELETE CASCADE, -- 코드 그룹 ID, code_group 테이블의 code_group_id를 참조
+		code_name VARCHAR(255), -- 코드 이름
+		code_desc VARCHAR(255), -- 코드 설명
+		code_value VARCHAR(255), -- 코드 값
+		code_order FLOAT, -- 코드 정렬 순서
+		code_use_yn BOOLEAN, -- 코드 사용 여부
+		created_by BIGINT, -- 등록자 ID
+		created_time TIMESTAMP, -- 등록 일시
+		modified_by BIGINT, -- 수정자 ID
+		last_modified_time TIMESTAMP, -- 수정 일시
+		delete_yn BOOLEAN -- 삭제 여부
+);
+
+CREATE TABLE faq (
+		faq_id BIGSERIAL PRIMARY KEY, -- FAQ ID, 기본 키, 자동 증가
+		question TEXT, -- 질문 내용
+		answer TEXT, -- 답변 내용
+		ref_service_cd VARCHAR(16) REFERENCES code(code_id) ON DELETE SET NULL, -- 관련 서비스 코드, code 테이블의 code_id를 참조
+		ref_link VARCHAR(255), -- 관련 링크
+		created_by BIGINT, -- 등록자 ID
+		created_time TIMESTAMP, -- 등록 일시
+		modified_by BIGINT, -- 수정자 ID
+		last_modified_time TIMESTAMP, -- 수정 일시
+		delete_yn BOOLEAN -- 삭제 여부
+);
+
+-- api_tracking 테이블 생성
+CREATE TABLE api_tracking (
+    tracking_id BIGSERIAL PRIMARY KEY,  -- 트레킹 ID, 기본 키, 자동 증가
+    request_url VARCHAR(255),  -- 요청 URL
+    method VARCHAR(255),  -- HTTP 메서드 (GET, POST, PUT, DELETE 등)
+    response_status_code VARCHAR(255),  -- 응답 상태 코드
+    input JSONB,  -- 요청 입력 데이터 (JSON 형식)
+    output JSONB,  -- 응답 출력 데이터 (JSON 형식)
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 사용자 테이블 생성
+CREATE TABLE user (
+    user_id BIGSERIAL PRIMARY KEY,  -- 사용자 ID, 기본 키, 자동 증가
+    user_nm VARCHAR(255),  -- 사용자명
+    email VARCHAR(255),  -- 사용자 이메일
+    password VARCHAR(255),  -- 비밀번호
+    role_cd VARCHAR(16),  -- 권한 코드 (사용자/담당자/관리자)
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 채팅방 테이블 생성
+CREATE TABLE chatroom (
+    chat_id BIGSERIAL PRIMARY KEY,  -- 채팅방 ID, 기본 키, 자동 증가
+    chat_group_id BIGINT,  -- 채팅방 그룹 ID, 가장 먼저 만들어진 채팅방 ID
+    state_cd VARCHAR(16),  -- 채팅방 상태 코드
+    with_bot_yn BOOLEAN,  -- 봇과 대화 여부
+    chat_title TEXT,  -- 대화 요약 제목
+    chat_content TEXT,  -- 대화 요약 내용
+    hashtag TEXT,  -- 해시태그
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+
+-- 채팅방 참여자 테이블 생성
+CREATE TABLE chatroom_user (
+    chat_user_id BIGSERIAL PRIMARY KEY,  -- 채팅방 참여 ID, 기본 키, 자동 증가
+    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE CASCADE,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
+    user_id BIGINT REFERENCES "user"(user_id) ON DELETE CASCADE,  -- 사용자 ID, user 테이블의 user_id를 참조
+    user_role_cd VARCHAR(16),  -- 참여자 역할 코드
+    chat_user_state_cd VARCHAR(16),  -- 상태 코드
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 채팅 대화 이력 테이블 생성
+CREATE TABLE chat_message (
+    chat_msg_id BIGSERIAL PRIMARY KEY,  -- 채팅 메시지 ID, 기본 키, 자동 증가
+    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE CASCADE,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
+    user_id BIGINT REFERENCES "user"(user_id) ON DELETE CASCADE,  -- 사용자 ID, user 테이블의 user_id를 참조
+    user_role_cd VARCHAR(16),  -- 사용자 역할 코드
+    chat_message TEXT,  -- 메시지
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 채팅방 변경 이력 테이블 생성
+CREATE TABLE chatroom_history (
+    chat_hist_id BIGSERIAL PRIMARY KEY,  -- 채팅방 이력 ID, 기본 키, 자동 증가
+    chat_id BIGINT,  -- 채팅방 ID
+    chat_group_id BIGINT,  -- 채팅방 그룹 ID
+    state_cd VARCHAR(16),  -- 채팅방 상태 코드
+    with_bot_yn BOOLEAN,  -- 봇과 대화 여부
+    chat_title TEXT,  -- 대화 요약 제목
+    chat_content TEXT,  -- 대화 요약 내용
+    hashtag TEXT,  -- 해시태그
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 질문 답변 내역 테이블 생성
+CREATE TABLE qna (
+    qna_id BIGSERIAL PRIMARY KEY,  -- QnA ID, 기본 키, 자동 증가
+    chat_group_id BIGINT,  -- 채팅방 그룹 ID, chatroom 테이블의 chat_group_id를 참조
+    user_id BIGINT REFERENCES "user"(user_id) ON DELETE SET NULL,  -- 질문자 ID, user 테이블의 user_id를 참조
+    ref_service_cd VARCHAR(16),  -- 관련 서비스 코드
+    question TEXT,  -- 질문
+    answer TEXT,  -- 답변
+    solved_yn BOOLEAN,  -- 해결 여부
+    satisfaction FLOAT,  -- 만족도
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 셀프 서비스 이용 내역 테이블 생성
+CREATE TABLE self_service_history (
+    self_service_id BIGSERIAL PRIMARY KEY,  -- 셀프 서비스 이용 ID, 기본 키, 자동 증가
+    user_id BIGINT REFERENCES "user"(user_id) ON DELETE SET NULL,  -- 사용자 ID, user 테이블의 user_id를 참조
+    self_service_cd VARCHAR(16),  -- 셀프 서비스 코드
+    input JSONB,  -- 요청 입력 데이터 (JSON 형식)
+    output JSONB,  -- 응답 출력 데이터 (JSON 형식)
+    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE SET NULL,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 챗봇 호출 이력 테이블 생성
+CREATE TABLE chatbot_request_history (
+    request_hist_id BIGSERIAL PRIMARY KEY,  -- 호출 이력 ID, 기본 키, 자동 증가
+    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE SET NULL,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
+    bot_type_cd VARCHAR(16),  -- 챗봇 구분 코드
+    url TEXT,  -- 호출 URL
+    input JSONB,  -- 프롬프트 데이터 (JSON 형식)
+    output JSONB,  -- 응답 데이터 (JSON 형식)
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);
+
+-- 첨부파일 테이블 생성
+CREATE TABLE attach_file (
+    file_id BIGSERIAL PRIMARY KEY,  -- 파일 ID, 기본 키, 자동 증가
+    ref_id BIGINT,  -- 참조 ID (채팅 메시지 ID 또는 FAQ ID 등)
+    file_path VARCHAR(255),  -- 파일 경로
+    file_name VARCHAR(255),  -- 파일명
+    orign_file_name VARCHAR(255),  -- 원본 파일명
+    created_by BIGINT,  -- 등록자 ID
+    created_time TIMESTAMP,  -- 등록 일시
+    modified_by BIGINT,  -- 수정자 ID
+    last_modified_time TIMESTAMP,  -- 수정 일시
+    delete_yn BOOLEAN  -- 삭제 여부
+);

@@ -1,0 +1,48 @@
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+FROM base
+
+# 필요한 패키지 설치 (Debian 기반)
+RUN apt-get update && apt-get install -y \
+    libc6-dev \
+    python3 \
+    make \
+    g++ \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    chromium \
+    wget \
+    libssl-dev \
+    libffi-dev \
+    zlib1g-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libgdbm-dev \
+    libbz2-dev \
+    liblzma-dev \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libxslt1-dev
+
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV NODE_OPTIONS=--max-old-space-size=8192
+
+WORKDIR /usr/src
+
+# 소스 파일 복사
+COPY . .
+
+RUN npm install
+RUN npm run build
+
+EXPOSE 3019
+
+CMD [ "npm", "run", "start" ]

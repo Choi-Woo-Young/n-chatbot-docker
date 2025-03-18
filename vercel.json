@@ -1,0 +1,9 @@
+{
+    "buildCommand": "npm run build",
+    "env": {
+      "RUSTUP_TOOLCHAIN": "nightly",
+      "CARGO_HOME": "/vercel/.cargo",
+      "RUSTUP_HOME": "/vercel/.rustup"
+    }
+  }
+  

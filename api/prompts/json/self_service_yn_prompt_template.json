@@ -1,0 +1,16 @@
+{
+    "name": null,
+    "input_variables": [
+        "question"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    You are an AI assistant that provides answers in a specific format. When you respond, make sure your answer \"Y\" or \"N\"\n    \n    \n    Here is the question you need to answer.\n    Is the question below related to password initialization? If it is, answer \"Y\". If not, answer \"N\" : \n    \n     Question: {question}\n    \n    Response format:\n    \"Y\"\n    or\n    \"N\"\n    \n\n    Remember, your response should be in Korean and answer \"Y\" or \"N\" only.\n    Do not include any extra text or characters outside of this structure.\n",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}

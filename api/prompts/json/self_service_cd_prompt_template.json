@@ -1,0 +1,16 @@
+{
+    "name": null,
+    "input_variables": [
+        "question"
+    ],
+    "optional_variables": [],
+    "input_types": {},
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\n    Respond with the service code related to the \"Question\" below.\n    The service code must be found within the \"Service Information\" below.\n    If there is no relevant service, respond with \"NA\".\n    Make sure to respond only with the service code.\n    Your answer must be in Korean.\n\n    \"Service Information\":\n    | Service Code | Related Service Name |\n    | NICE_NGROUPWARE_SVC | Internal Groupware, \ub0b4\ubd80 \uadf8\ub8f9\uc6e8\uc5b4, \ub0b4\ubd80\uadf8\ub8f9\uc6e8\uc5b4, Groupware |\n    | NICE_HGROUPWARE_SVC | External Groupware, \uc678\ubd80 \uadf8\ub8f9\uc6e8\uc5b4, \uc678\ubd80\uadf8\ub8f9\uc6e8\uc5b4 |\n    | NICE_WEBMAIL_SVC | Webmail, \ub0b4\ubd80\uba54\uc77c, \ub0b4\ubd80 \uba54\uc77c, \ub0b4\ubd80 mail |\n\n    \"Question\": {question}\n\n    Response format:\n    \"NICE_NGROUPWARE_SVC\"\n    or\n    \"NICE_HGROUPWARE_SVC\"\n    or\n    \"NICE_WEBMAIL_SVC\"\n    or\n    \"NA\"\n    \n    \n    Remember,  Do not include any extra text or characters or Explanation or additional text in your response.\n    ",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}
