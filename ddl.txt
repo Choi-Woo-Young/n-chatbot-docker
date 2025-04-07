@@ -1,193 +1,499 @@
+-- nchatbot.api_tracking definition
+
+-- Drop table
+
+-- DROP TABLE api_tracking;
+
+CREATE TABLE api_tracking (
+	tracking_id bigserial NOT NULL,
+	request_url varchar(255) NULL,
+	"method" varchar(255) NULL,
+	response_status_code varchar(255) NULL,
+	"input" jsonb NULL,
+	"output" jsonb NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT api_tracking_pkey PRIMARY KEY (tracking_id)
+);
+
+-- Permissions
+
+ALTER TABLE api_tracking OWNER TO postgres;
+GRANT ALL ON TABLE api_tracking TO postgres;
+
+
+-- nchatbot.attach_file definition
+
+-- Drop table
+
+-- DROP TABLE attach_file;
+
+CREATE TABLE attach_file (
+	file_id bigserial NOT NULL,
+	ref_id int8 NULL,
+	file_path varchar(255) NULL,
+	file_name varchar(255) NULL,
+	orign_file_name varchar(255) NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT attach_file_pkey PRIMARY KEY (file_id)
+);
+
+-- Permissions
+
+ALTER TABLE attach_file OWNER TO postgres;
+GRANT ALL ON TABLE attach_file TO postgres;
+
+
+-- nchatbot.chatroom definition
+
+-- Drop table
+
+-- DROP TABLE chatroom;
+
+CREATE TABLE chatroom (
+	chat_id bigserial NOT NULL,
+	chat_group_id int8 NULL,
+	state_cd varchar(16) NULL,
+	with_bot_yn bool NULL,
+	user_id int8 NULL,
+	mgr_user_id int8 NULL,
+	chat_title text NULL,
+	chat_content text NULL,
+	hashtag text NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	service_cd text NULL,
+	CONSTRAINT chatroom_pkey PRIMARY KEY (chat_id)
+);
+
+-- Permissions
+
+ALTER TABLE chatroom OWNER TO postgres;
+GRANT ALL ON TABLE chatroom TO postgres;
+
+
+-- nchatbot.chatroom_history definition
+
+-- Drop table
+
+-- DROP TABLE chatroom_history;
+
+CREATE TABLE chatroom_history (
+	chat_hist_id bigserial NOT NULL,
+	chat_id int8 NULL,
+	chat_group_id int8 NULL,
+	state_cd varchar(16) NULL,
+	with_bot_yn bool NULL,
+	chat_title text NULL,
+	chat_content text NULL,
+	hashtag text NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT chatroom_history_pkey PRIMARY KEY (chat_hist_id)
+);
+
+-- Permissions
+
+ALTER TABLE chatroom_history OWNER TO postgres;
+GRANT ALL ON TABLE chatroom_history TO postgres;
+
+
+-- nchatbot.code_group definition
+
+-- Drop table
+
+-- DROP TABLE code_group;
 
 CREATE TABLE code_group (
-		code_group_id VARCHAR(16) PRIMARY KEY, -- 코드 그룹 ID, 기본 키
-		code_group_name VARCHAR(255), -- 코드 그룹 이름
-		code_group_desc VARCHAR(255), -- 코드 그룹 설명
-		code_group_order FLOAT, -- 코드 그룹 정렬 순서
-		code_group_use_yn BOOLEAN, -- 코드 그룹 사용 여부
-		created_by BIGINT, -- 등록자 ID
-		created_time TIMESTAMP, -- 등록 일시
-		modified_by BIGINT, -- 수정자 ID
-		last_modified_time TIMESTAMP, -- 수정 일시
-		delete_yn BOOLEAN -- 삭제 여부
+	code_group_id varchar(16) NOT NULL,
+	code_group_name varchar(255) NULL,
+	code_group_desc varchar(255) NULL,
+	code_group_order float8 NULL,
+	code_group_use_yn bool NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT code_group_pkey PRIMARY KEY (code_group_id)
 );
+
+-- Permissions
+
+ALTER TABLE code_group OWNER TO postgres;
+GRANT ALL ON TABLE code_group TO postgres;
+
+
+-- nchatbot.embedding_file definition
+
+-- Drop table
+
+-- DROP TABLE embedding_file;
+
+CREATE TABLE embedding_file (
+	file_id bigserial NOT NULL,
+	file_path varchar(255) NULL,
+	file_name varchar(255) NULL,
+	orign_file_name varchar(255) NULL,
+	category_name varchar(16) NULL,
+	service_cd varchar(255) NULL,
+	service_name varchar(255) NULL,
+	embedding_yn bool NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	service_desc text NULL,
+	CONSTRAINT embedding_file_pkey PRIMARY KEY (file_id)
+);
+
+-- Permissions
+
+ALTER TABLE embedding_file OWNER TO postgres;
+GRANT ALL ON TABLE embedding_file TO postgres;
+
+
+-- nchatbot.feedback definition
+
+-- Drop table
+
+-- DROP TABLE feedback;
+
+CREATE TABLE feedback (
+	feedback_id bigserial NOT NULL, -- ID
+	contents text NULL, -- 내용
+	image_path varchar(255) NULL, -- 캡처 이미지 경로
+	state_cd varchar(10) NOT NULL, -- 처리상태코드
+	mgr_user_id int8 NULL, -- 처리자
+	processing_detail text NULL, -- 처리내용
+	processing_date timestamp NULL, -- 처리일자
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT feedback_pkey PRIMARY KEY (feedback_id)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN nchatbot.feedback.feedback_id IS 'ID';
+COMMENT ON COLUMN nchatbot.feedback.contents IS '내용';
+COMMENT ON COLUMN nchatbot.feedback.image_path IS '캡처 이미지 경로';
+COMMENT ON COLUMN nchatbot.feedback.state_cd IS '처리상태코드';
+COMMENT ON COLUMN nchatbot.feedback.mgr_user_id IS '처리자';
+COMMENT ON COLUMN nchatbot.feedback.processing_detail IS '처리내용';
+COMMENT ON COLUMN nchatbot.feedback.processing_date IS '처리일자';
+
+-- Permissions
+
+ALTER TABLE feedback OWNER TO postgres;
+GRANT ALL ON TABLE feedback TO postgres;
+
+
+-- nchatbot."notice" definition
+
+-- Drop table
+
+-- DROP TABLE "notice";
+
+CREATE TABLE "notice" (
+	notice_id bigserial NOT NULL, -- ID
+	contents text NULL, -- 내용
+	start_time varchar(12) NULL, -- 게시시작일시
+	end_time varchar(12) NULL, -- 게시종료일시
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT notice_pkey PRIMARY KEY (notice_id)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN nchatbot."notice".notice_id IS 'ID';
+COMMENT ON COLUMN nchatbot."notice".contents IS '내용';
+COMMENT ON COLUMN nchatbot."notice".start_time IS '게시시작일시';
+COMMENT ON COLUMN nchatbot."notice".end_time IS '게시종료일시';
+
+-- Permissions
+
+ALTER TABLE "notice" OWNER TO postgres;
+GRANT ALL ON TABLE "notice" TO postgres;
+
+
+-- nchatbot.unread_chat_message definition
+
+-- Drop table
+
+-- DROP TABLE unread_chat_message;
+
+CREATE TABLE unread_chat_message (
+	unread_id bigserial NOT NULL,
+	chat_msg_id int8 NOT NULL,
+	chat_id int8 NOT NULL,
+	user_id int8 NOT NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT chat_message_pkey_1 PRIMARY KEY (unread_id)
+);
+
+-- Permissions
+
+ALTER TABLE unread_chat_message OWNER TO postgres;
+GRANT ALL ON TABLE unread_chat_message TO postgres;
+
+
+-- nchatbot."user" definition
+
+-- Drop table
+
+-- DROP TABLE "user";
+
+CREATE TABLE "user" (
+	user_id bigserial NOT NULL,
+	user_nm varchar(255) NULL,
+	email varchar(255) NULL,
+	"password" varchar(255) NULL,
+	role_cd varchar(16) NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	emp_no varchar(16) NULL,
+	mng_services varchar(255) NULL, -- 담당서비스
+	ip varchar(255) NULL,
+	dept_nm varchar(255) NULL,
+	position_nm varchar(255) NULL,
+	guide_tour_json varchar(255) DEFAULT '{"login":"N", "chatList":"N", "llmChatPannel":"N"}'::character varying NULL,
+	CONSTRAINT user_pkey PRIMARY KEY (user_id)
+);
+
+-- Column comments
+
+COMMENT ON COLUMN nchatbot."user".mng_services IS '담당서비스';
+
+-- Permissions
+
+ALTER TABLE "user" OWNER TO postgres;
+GRANT ALL ON TABLE "user" TO postgres;
+
+
+-- nchatbot.chat_message definition
+
+-- Drop table
+
+-- DROP TABLE chat_message;
+
+CREATE TABLE chat_message (
+	chat_msg_id bigserial NOT NULL,
+	chat_id int8 NULL,
+	user_id int8 NULL,
+	user_role_cd varchar(16) NULL,
+	chat_message text NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	selected_cd text NULL,
+	previous_query text NULL,
+	CONSTRAINT chat_message_pkey PRIMARY KEY (chat_msg_id),
+	CONSTRAINT chat_message_chat_id_fkey FOREIGN KEY (chat_id) REFERENCES chatroom(chat_id) ON DELETE CASCADE,
+	CONSTRAINT chat_message_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE
+);
+
+-- Permissions
+
+ALTER TABLE chat_message OWNER TO postgres;
+GRANT ALL ON TABLE chat_message TO postgres;
+
+
+-- nchatbot.chatbot_request_history definition
+
+-- Drop table
+
+-- DROP TABLE chatbot_request_history;
+
+CREATE TABLE chatbot_request_history (
+	request_hist_id bigserial NOT NULL,
+	chat_id int8 NULL,
+	bot_type_cd varchar(16) NULL,
+	url text NULL,
+	"input" jsonb NULL,
+	"output" jsonb NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT chatbot_request_history_pkey PRIMARY KEY (request_hist_id),
+	CONSTRAINT chatbot_request_history_chat_id_fkey FOREIGN KEY (chat_id) REFERENCES chatroom(chat_id) ON DELETE SET NULL
+);
+
+-- Permissions
+
+ALTER TABLE chatbot_request_history OWNER TO postgres;
+GRANT ALL ON TABLE chatbot_request_history TO postgres;
+
+
+-- nchatbot.chatroom_user definition
+
+-- Drop table
+
+-- DROP TABLE chatroom_user;
+
+CREATE TABLE chatroom_user (
+	chat_user_id bigserial NOT NULL,
+	chat_id int8 NULL,
+	user_id int8 NULL,
+	user_role_cd varchar(16) NULL,
+	chat_user_state_cd varchar(16) NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT chatroom_user_pkey PRIMARY KEY (chat_user_id),
+	CONSTRAINT chatroom_user_chat_id_fkey FOREIGN KEY (chat_id) REFERENCES chatroom(chat_id) ON DELETE CASCADE,
+	CONSTRAINT chatroom_user_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE
+);
+
+-- Permissions
+
+ALTER TABLE chatroom_user OWNER TO postgres;
+GRANT ALL ON TABLE chatroom_user TO postgres;
+
+
+-- nchatbot.code definition
+
+-- Drop table
+
+-- DROP TABLE code;
 
 CREATE TABLE code (
-		code_id VARCHAR(16) PRIMARY KEY, -- 코드 ID, 기본 키
-		code_group_id VARCHAR(16) REFERENCES code_group(code_group_id) ON DELETE CASCADE, -- 코드 그룹 ID, code_group 테이블의 code_group_id를 참조
-		code_name VARCHAR(255), -- 코드 이름
-		code_desc VARCHAR(255), -- 코드 설명
-		code_value VARCHAR(255), -- 코드 값
-		code_order FLOAT, -- 코드 정렬 순서
-		code_use_yn BOOLEAN, -- 코드 사용 여부
-		created_by BIGINT, -- 등록자 ID
-		created_time TIMESTAMP, -- 등록 일시
-		modified_by BIGINT, -- 수정자 ID
-		last_modified_time TIMESTAMP, -- 수정 일시
-		delete_yn BOOLEAN -- 삭제 여부
+	code_id varchar(16) NOT NULL,
+	code_group_id varchar(16) NULL,
+	code_name varchar(255) NULL,
+	code_desc varchar(255) NULL,
+	code_value varchar(255) NULL,
+	code_order float8 NULL,
+	code_use_yn bool NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT code_pkey PRIMARY KEY (code_id),
+	CONSTRAINT code_code_group_id_fkey FOREIGN KEY (code_group_id) REFERENCES code_group(code_group_id) ON DELETE CASCADE
 );
+
+-- Permissions
+
+ALTER TABLE code OWNER TO postgres;
+GRANT ALL ON TABLE code TO postgres;
+
+
+-- nchatbot.faq definition
+
+-- Drop table
+
+-- DROP TABLE faq;
 
 CREATE TABLE faq (
-		faq_id BIGSERIAL PRIMARY KEY, -- FAQ ID, 기본 키, 자동 증가
-		question TEXT, -- 질문 내용
-		answer TEXT, -- 답변 내용
-		ref_service_cd VARCHAR(16) REFERENCES code(code_id) ON DELETE SET NULL, -- 관련 서비스 코드, code 테이블의 code_id를 참조
-		ref_link VARCHAR(255), -- 관련 링크
-		created_by BIGINT, -- 등록자 ID
-		created_time TIMESTAMP, -- 등록 일시
-		modified_by BIGINT, -- 수정자 ID
-		last_modified_time TIMESTAMP, -- 수정 일시
-		delete_yn BOOLEAN -- 삭제 여부
+	faq_id bigserial NOT NULL,
+	question text NULL,
+	answer text NULL,
+	ref_service_cd varchar(16) NULL,
+	ref_link varchar(255) NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT faq_pkey PRIMARY KEY (faq_id),
+	CONSTRAINT faq_ref_service_cd_fkey FOREIGN KEY (ref_service_cd) REFERENCES code(code_id) ON DELETE SET NULL
 );
 
--- api_tracking 테이블 생성
-CREATE TABLE api_tracking (
-    tracking_id BIGSERIAL PRIMARY KEY,  -- 트레킹 ID, 기본 키, 자동 증가
-    request_url VARCHAR(255),  -- 요청 URL
-    method VARCHAR(255),  -- HTTP 메서드 (GET, POST, PUT, DELETE 등)
-    response_status_code VARCHAR(255),  -- 응답 상태 코드
-    input JSONB,  -- 요청 입력 데이터 (JSON 형식)
-    output JSONB,  -- 응답 출력 데이터 (JSON 형식)
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+-- Permissions
 
--- 사용자 테이블 생성
-CREATE TABLE user (
-    user_id BIGSERIAL PRIMARY KEY,  -- 사용자 ID, 기본 키, 자동 증가
-    user_nm VARCHAR(255),  -- 사용자명
-    email VARCHAR(255),  -- 사용자 이메일
-    password VARCHAR(255),  -- 비밀번호
-    role_cd VARCHAR(16),  -- 권한 코드 (사용자/담당자/관리자)
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
-
--- 채팅방 테이블 생성
-CREATE TABLE chatroom (
-    chat_id BIGSERIAL PRIMARY KEY,  -- 채팅방 ID, 기본 키, 자동 증가
-    chat_group_id BIGINT,  -- 채팅방 그룹 ID, 가장 먼저 만들어진 채팅방 ID
-    state_cd VARCHAR(16),  -- 채팅방 상태 코드
-    with_bot_yn BOOLEAN,  -- 봇과 대화 여부
-    chat_title TEXT,  -- 대화 요약 제목
-    chat_content TEXT,  -- 대화 요약 내용
-    hashtag TEXT,  -- 해시태그
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+ALTER TABLE faq OWNER TO postgres;
+GRANT ALL ON TABLE faq TO postgres;
 
 
--- 채팅방 참여자 테이블 생성
-CREATE TABLE chatroom_user (
-    chat_user_id BIGSERIAL PRIMARY KEY,  -- 채팅방 참여 ID, 기본 키, 자동 증가
-    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE CASCADE,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
-    user_id BIGINT REFERENCES "user"(user_id) ON DELETE CASCADE,  -- 사용자 ID, user 테이블의 user_id를 참조
-    user_role_cd VARCHAR(16),  -- 참여자 역할 코드
-    chat_user_state_cd VARCHAR(16),  -- 상태 코드
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+-- nchatbot.qna definition
 
--- 채팅 대화 이력 테이블 생성
-CREATE TABLE chat_message (
-    chat_msg_id BIGSERIAL PRIMARY KEY,  -- 채팅 메시지 ID, 기본 키, 자동 증가
-    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE CASCADE,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
-    user_id BIGINT REFERENCES "user"(user_id) ON DELETE CASCADE,  -- 사용자 ID, user 테이블의 user_id를 참조
-    user_role_cd VARCHAR(16),  -- 사용자 역할 코드
-    chat_message TEXT,  -- 메시지
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+-- Drop table
 
--- 채팅방 변경 이력 테이블 생성
-CREATE TABLE chatroom_history (
-    chat_hist_id BIGSERIAL PRIMARY KEY,  -- 채팅방 이력 ID, 기본 키, 자동 증가
-    chat_id BIGINT,  -- 채팅방 ID
-    chat_group_id BIGINT,  -- 채팅방 그룹 ID
-    state_cd VARCHAR(16),  -- 채팅방 상태 코드
-    with_bot_yn BOOLEAN,  -- 봇과 대화 여부
-    chat_title TEXT,  -- 대화 요약 제목
-    chat_content TEXT,  -- 대화 요약 내용
-    hashtag TEXT,  -- 해시태그
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+-- DROP TABLE qna;
 
--- 질문 답변 내역 테이블 생성
 CREATE TABLE qna (
-    qna_id BIGSERIAL PRIMARY KEY,  -- QnA ID, 기본 키, 자동 증가
-    chat_group_id BIGINT,  -- 채팅방 그룹 ID, chatroom 테이블의 chat_group_id를 참조
-    user_id BIGINT REFERENCES "user"(user_id) ON DELETE SET NULL,  -- 질문자 ID, user 테이블의 user_id를 참조
-    ref_service_cd VARCHAR(16),  -- 관련 서비스 코드
-    question TEXT,  -- 질문
-    answer TEXT,  -- 답변
-    solved_yn BOOLEAN,  -- 해결 여부
-    satisfaction FLOAT,  -- 만족도
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
+	qna_id bigserial NOT NULL,
+	chat_group_id int8 NULL,
+	user_id int8 NULL,
+	ref_service_cd varchar(16) NULL,
+	question text NULL,
+	answer text NULL,
+	solved_yn bool NULL,
+	satisfaction float8 NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT qna_pkey PRIMARY KEY (qna_id),
+	CONSTRAINT qna_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE SET NULL
 );
 
--- 셀프 서비스 이용 내역 테이블 생성
+-- Permissions
+
+ALTER TABLE qna OWNER TO postgres;
+GRANT ALL ON TABLE qna TO postgres;
+
+
+-- nchatbot.self_service_history definition
+
+-- Drop table
+
+-- DROP TABLE self_service_history;
+
 CREATE TABLE self_service_history (
-    self_service_id BIGSERIAL PRIMARY KEY,  -- 셀프 서비스 이용 ID, 기본 키, 자동 증가
-    user_id BIGINT REFERENCES "user"(user_id) ON DELETE SET NULL,  -- 사용자 ID, user 테이블의 user_id를 참조
-    self_service_cd VARCHAR(16),  -- 셀프 서비스 코드
-    input JSONB,  -- 요청 입력 데이터 (JSON 형식)
-    output JSONB,  -- 응답 출력 데이터 (JSON 형식)
-    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE SET NULL,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
+	self_service_id bigserial NOT NULL,
+	user_id int8 NULL,
+	self_service_cd varchar(16) NULL,
+	"input" jsonb NULL,
+	"output" jsonb NULL,
+	chat_id int8 NULL,
+	created_by int8 NULL,
+	created_time timestamp NULL,
+	modified_by int8 NULL,
+	last_modified_time timestamp NULL,
+	delete_yn bool NULL,
+	CONSTRAINT self_service_history_pkey PRIMARY KEY (self_service_id),
+	CONSTRAINT self_service_history_chat_id_fkey FOREIGN KEY (chat_id) REFERENCES chatroom(chat_id) ON DELETE SET NULL,
+	CONSTRAINT self_service_history_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE SET NULL
 );
 
--- 챗봇 호출 이력 테이블 생성
-CREATE TABLE chatbot_request_history (
-    request_hist_id BIGSERIAL PRIMARY KEY,  -- 호출 이력 ID, 기본 키, 자동 증가
-    chat_id BIGINT REFERENCES chatroom(chat_id) ON DELETE SET NULL,  -- 채팅방 ID, chatroom 테이블의 chat_id를 참조
-    bot_type_cd VARCHAR(16),  -- 챗봇 구분 코드
-    url TEXT,  -- 호출 URL
-    input JSONB,  -- 프롬프트 데이터 (JSON 형식)
-    output JSONB,  -- 응답 데이터 (JSON 형식)
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+-- Permissions
 
--- 첨부파일 테이블 생성
-CREATE TABLE attach_file (
-    file_id BIGSERIAL PRIMARY KEY,  -- 파일 ID, 기본 키, 자동 증가
-    ref_id BIGINT,  -- 참조 ID (채팅 메시지 ID 또는 FAQ ID 등)
-    file_path VARCHAR(255),  -- 파일 경로
-    file_name VARCHAR(255),  -- 파일명
-    orign_file_name VARCHAR(255),  -- 원본 파일명
-    created_by BIGINT,  -- 등록자 ID
-    created_time TIMESTAMP,  -- 등록 일시
-    modified_by BIGINT,  -- 수정자 ID
-    last_modified_time TIMESTAMP,  -- 수정 일시
-    delete_yn BOOLEAN  -- 삭제 여부
-);
+ALTER TABLE self_service_history OWNER TO postgres;
+GRANT ALL ON TABLE self_service_history TO postgres;
