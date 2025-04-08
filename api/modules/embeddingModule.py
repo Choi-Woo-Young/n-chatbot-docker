@@ -113,7 +113,8 @@ class EmbeddingModule:
                     chunk_size = 400
                     overlap_size = 150
 
-                path = os.path.join(os.path.dirname(__file__), './api/files/', unembedded_file.file_path)
+                #path = os.path.join(os.path.dirname(__file__), '../files/', unembedded_file.file_path)
+                path = os.path.join(os.path.dirname(__file__), '..', 'files', unembedded_file.file_path)
                 split_docs = self._load_and_split_file(path, chunk_size, overlap_size)
                 for doc in split_docs:
                     doc.metadata = {"file_path": unembedded_file.file_path, "category_name": unembedded_file.category_name, "service_cd": unembedded_file.service_cd, "service_name": unembedded_file.service_name}

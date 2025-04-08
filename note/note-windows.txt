@@ -49,3 +49,11 @@ npm install
 
 $ git config --global user.name "wychoi"
 $ git config --global user.email success7895@gmail.com
+
+
+stop any nodejs process for the project.
+close vs code and reopen it.
+delete .next folder.
+run npm cache clear --force
+close vs code and reopen it.
+run npm run dev.
