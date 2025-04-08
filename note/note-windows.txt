@@ -1,0 +1,51 @@
+### 파이썬 버전
+
+- 3.11.9
+
+
+###python virtual Environment
+
+D:\StudioProjects\n-chatbot-docker에서 실행
+
+1. python -m venv env  
+2. env\Scripts\activate.bat
+3. env\Scripts\deactivate.bat
+
+
+### 실행 순서
+
+1. 가상환경 실행
+2. npm install
+3. npm run dev
+
+
+### 파이썬 패키지만 설치할 때
+- pip install -r requirements.txt
+
+
+### 기타
+- pip freeze > requirements.txt
+
+
+### FAST API 기동 모드 설장
+export FAST_API_MODE="production" #내부망
+export FAST_API_MODE="development" #연구개발망
+export FAST_API_MODE="test" #내부망 개발서버
+
+
+### 로컬에서 redis 포트 변경
+redis-server --port 6319
+
+
+vi /opt/homebrew/etc/redis.conf
+brew services start redis
+
+
+
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+
+
+$ git config --global user.name "wychoi"
+$ git config --global user.email success7895@gmail.com

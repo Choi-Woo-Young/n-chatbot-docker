@@ -76,36 +76,30 @@ class EmbeddingModule:
             # db = next(get_db())
             db = SessionLocal()
             unembedded_files = embedding_file_repository.get_unembedded_files(db)
-            
+            logger.info(f'unembedded_files: {unembedded_files}')
             if len(unembedded_files) == 0:
                 cache_embeddings_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.cache/private_embeddings/")
+                index_file_path = os.path.join(cache_embeddings_dir, "index.faiss")
                 os.makedirs(cache_embeddings_dir, exist_ok=True)
 
-                vectorstore = FAISS.load_local(cache_embeddings_dir, HuggingFaceEmbeddings(
-                    model_name="./huggingface_model/"+g.env_settings.embedding_model,
-                    model_kwargs={"device": "cpu"},  # 필요에 따라 "cpu" 또는 "cuda" 사용
-                    encode_kwargs={"normalize_embeddings": True}
-                ), 
-                allow_dangerous_deserialization=True)
-
-                # FAISS retriever 가져오기
-                # faiss_retriever = vectorstore.as_retriever(search_kwargs={"k": k})
-                faiss_retriever = vectorstore.as_retriever()
-                self._retriever = faiss_retriever
+                logger.info(f"cache_embeddings_dir: {cache_embeddings_dir}")
                 
-                # # BM25 retriever 추가
-                # docs = self._load_all_documents(db)
-                # bm25_retriever = BM25Retriever.from_documents(docs)
-                
-                # # Ensemble retriever 생성 (BM25와 FAISS를 결합)
-                # ensemble_retriever = EnsembleRetriever(
-                #     retrievers=[bm25_retriever, faiss_retriever],
-                #     weights=[0.5, 0.5]
-                # )
-                
-                # self._retriever = ensemble_retriever
-                logger.info("Retriever loaded from existing cache.")
-                return
+                if os.path.exists(index_file_path):
+                    # 인덱스가 존재하면 로드
+                    vectorstore = FAISS.load_local(
+                        cache_embeddings_dir,
+                        HuggingFaceEmbeddings(
+                            model_name="./api/huggingface_model/" + g.env_settings.embedding_model,
+                            model_kwargs={"device": "cpu"},
+                            encode_kwargs={"normalize_embeddings": True}
+                        ),
+                        allow_dangerous_deserialization=True
+                    )
+                    self._retriever = vectorstore.as_retriever()
+                    logger.info("Retriever loaded from existing cache.")
+                    return
+                else:
+                    logger.warning("FAISS index not found. Skipping retriever load.")
             
             all_docs = []
             chunk_size = 500
@@ -119,7 +113,7 @@ class EmbeddingModule:
                     chunk_size = 400
                     overlap_size = 150
 
-                path = os.path.join(os.path.dirname(__file__), '../files/', unembedded_file.file_path)
+                path = os.path.join(os.path.dirname(__file__), './api/files/', unembedded_file.file_path)
                 split_docs = self._load_and_split_file(path, chunk_size, overlap_size)
                 for doc in split_docs:
                     doc.metadata = {"file_path": unembedded_file.file_path, "category_name": unembedded_file.category_name, "service_cd": unembedded_file.service_cd, "service_name": unembedded_file.service_name}
@@ -217,39 +211,40 @@ class EmbeddingModule:
         except Exception as e:
             logger.error(f"_embed_texts: {e}")
             raise HTTPException(status_code=500, detail=str(e))
-
+        
     def _embed_files(self, docs):
-        try:    
+        if not docs:
+            logger.warning("임베딩할 문서가 없습니다. 벡터스토어 생성/업데이트를 건너뜁니다.")
+            return
+        try:
             cache_embeddings_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.cache/private_embeddings/")
             os.makedirs(cache_embeddings_dir, exist_ok=True)
             cache_store = LocalFileStore(os.path.abspath(cache_embeddings_dir))
 
-            # 로컬 모델 경로
-            local_model_path = "./huggingface_model/"+g.env_settings.embedding_model #multilingual-e5-small
+            # 로컬 모델 경로 설정
+            local_model_path = "./api/huggingface_model/" + g.env_settings.embedding_model
 
             # HuggingFace 임베딩 초기화
             embeddings = HuggingFaceEmbeddings(
                 model_name=local_model_path,
-                model_kwargs={"device": "cpu"},  # 필요에 따라 "cpu" 또는 "cuda" 사용
+                model_kwargs={"device": "cpu"},
                 encode_kwargs={"normalize_embeddings": True}
             )
-            
+
             cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_store)
 
             if os.path.exists(os.path.join(cache_embeddings_dir, "index.faiss")):
-                logger.info("Existing vectorstore found. Loading it.")
+                logger.info("기존 벡터스토어가 발견되었습니다. 해당 벡터스토어를 로드합니다.")
                 vectorstore = FAISS.load_local(cache_embeddings_dir, cached_embeddings, allow_dangerous_deserialization=True)
                 vectorstore.add_documents(docs)
             else:
-                logger.info("No existing vectorstore found, creating a new one.")
+                logger.info("기존 벡터스토어를 찾을 수 없어 새로 생성합니다.")
                 vectorstore = FAISS.from_documents(docs, cached_embeddings)
             
-            # faiss_index_file = os.path.join(cache_embeddings_dir, "index.faiss")
-            vectorstore.save_local(cache_embeddings_dir)  # 인덱스 및 메타데이터 저장
-
-            # self._retriever = vectorstore.as_retriever(search_kwargs={"k": k})
+            # 인덱스 저장
+            vectorstore.save_local(cache_embeddings_dir)
             self._retriever = vectorstore.as_retriever()
-            logger.info("Retriever has been created.")
+            logger.info("리트리버가 성공적으로 생성되었습니다.")
         except Exception as e:
             logger.error(f"_embed_files: {e}")
             raise HTTPException(status_code=500, detail=str(e))

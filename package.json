@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "fastapi-dev": "source env/bin/activate && pip install -r api/requirements.txt && export FAST_API_MODE=development && python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
-    "fastapi-test": "source env/bin/activate && pip install -r api/requirements.txt && export FAST_API_MODE=test && python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
-    "next-dev": "PORT=3019 next dev",
-    "next-test": "NODE_ENV=test PORT=3019 next dev",
+    "fastapi-dev": "cross-env FAST_API_MODE=development python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
+    "fastapi-test": "cross-env FAST_API_MODE=test python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
+    "next-dev": "cross-env PORT=3019 next dev",
+    "next-test": "cross-env NODE_ENV=test PORT=3019 next dev",
     "dev": "concurrently \"npm run next-dev\" \"npm run fastapi-dev\"",
     "test": "concurrently \"npm run next-test\" \"npm run fastapi-test\"",
     "build": "next build",
-    "build:test": "NODE_ENV=test dotenv -e .env.test -- next build",
-    "start": "PORT=3019 next start",
+    "build:test": "cross-env NODE_ENV=test dotenv -e .env.test -- next build",
+    "start": "cross-env PORT=3019 next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -77,6 +77,7 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
-    "@types/sockjs-client": "^1.5.4"
+    "@types/sockjs-client": "^1.5.4",
+    "cross-env": "^7.0.3"
   }
 }
