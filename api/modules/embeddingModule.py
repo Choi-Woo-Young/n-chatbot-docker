@@ -89,7 +89,7 @@ class EmbeddingModule:
                     vectorstore = FAISS.load_local(
                         cache_embeddings_dir,
                         HuggingFaceEmbeddings(
-                            model_name="./api/huggingface_model/" + g.env_settings.embedding_model,
+                            model_name="./huggingface_model/" + g.env_settings.embedding_model,
                             model_kwargs={"device": "cpu"},
                             encode_kwargs={"normalize_embeddings": True}
                         ),
@@ -222,7 +222,7 @@ class EmbeddingModule:
             cache_store = LocalFileStore(os.path.abspath(cache_embeddings_dir))
 
             # 로컬 모델 경로 설정
-            local_model_path = "./api/huggingface_model/" + g.env_settings.embedding_model
+            local_model_path = "./huggingface_model/" + g.env_settings.embedding_model
 
             # HuggingFace 임베딩 초기화
             embeddings = HuggingFaceEmbeddings(
