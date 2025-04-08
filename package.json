@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "fastapi-dev": "source env/bin/activate && pip install -r requirements.txt && export FAST_API_MODE=development && python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
-    "fastapi-test": "source env/bin/activate && pip install -r requirements.txt && export FAST_API_MODE=test && python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
+    "fastapi-dev": "source env/bin/activate && pip install -r api/requirements.txt && export FAST_API_MODE=development && python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
+    "fastapi-test": "source env/bin/activate && pip install -r api/requirements.txt && export FAST_API_MODE=test && python -m uvicorn api.index:app --reload --host 0.0.0.0 --port 8019",
     "next-dev": "PORT=3019 next dev",
     "next-test": "NODE_ENV=test PORT=3019 next dev",
     "dev": "concurrently \"npm run next-dev\" \"npm run fastapi-dev\"",
