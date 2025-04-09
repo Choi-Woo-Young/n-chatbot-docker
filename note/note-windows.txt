@@ -34,7 +34,7 @@ export FAST_API_MODE="test" #내부망 개발서버
 
 
 ### 로컬에서 redis 포트 변경
-redis-server --port 6319
+redis-server --port 6379
 
 
 vi /opt/homebrew/etc/redis.conf
