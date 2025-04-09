@@ -76,7 +76,8 @@ services:
       - pgdb
       - redis
     environment:
-      - FAST_API_MODE=development
+      - FAST_API_MODE=production
+      
     ports:
       - "8019:8019"
     networks:
