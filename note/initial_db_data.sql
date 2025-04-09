@@ -30,8 +30,8 @@ VALUES(1, '신용정보의 이용 및 보호에 관한 법률(법률)(제20304�
 
 INSERT INTO "user" (user_nm,email,"password",role_cd,created_by,created_time,modified_by,last_modified_time,delete_yn,emp_no,mng_services,ip,dept_nm,position_nm,guide_tour_json) VALUES
 	 ('내규봇','nice-law@niceinfo.co.kr','1234','BOT',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'::ffff:10.97.192.101','서비스운영실','매니저','{"login":"N", "chatList":"N", "llmChatPannel":"N"}'),
-	 ('박예린','rnrmf941@niceinfo.co.kr','1234','USR',NULL,NULL,NULL,'2024-10-16 17:24:38.092622',NULL,NULL,'::ffff:10.97.192.103','::11','서비스운영실','매니저','{"login":"Y","chatList":"Y","llmChatPannel":"Y"}'),
-	 ('최우영','wychoi@niceinfo.co.kr','1234','HELP',NULL,NULL,NULL,'2024-10-14 16:10:38.053056',NULL,'011650033',NULL,'::1','서비스운영실','매니저','{"login":"Y","chatList":"Y","llmChatPannel":"Y"}');
+	 ('오애순','rnrmf941@niceinfo.co.kr','1234','USR',NULL,NULL,NULL,'2024-10-16 17:24:38.092622',NULL,NULL,'::ffff:10.97.192.103','::11','서비스운영실','매니저','{"login":"Y","chatList":"Y","llmChatPannel":"Y"}'),
+	 ('양관식','wychoi@niceinfo.co.kr','1234','HELP',NULL,NULL,NULL,'2024-10-14 16:10:38.053056',NULL,'011650033',NULL,'::1','서비스운영실','매니저','{"login":"Y","chatList":"Y","llmChatPannel":"Y"}');
 
 
 INSERT INTO nchatbot.faq (question,answer,ref_service_cd,ref_link,created_by,created_time,modified_by,last_modified_time,delete_yn) VALUES
