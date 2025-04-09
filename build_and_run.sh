@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /Users/service_one/StudioProjects/n-chatbot-docker
+cd /data/n-chatbot-docker
 
 echo "Building nchatbot-front image..."
 docker build -f ./docker/Dockerfile-front -t nchatbot-front:0.1 .

@@ -49,7 +49,7 @@ COPY ./api ./api
 RUN python3.11 -m pip install --upgrade pip && \
     python3.11 -m pip install --default-timeout=6000 -r ./api/requirements.txt
 
-COPY ./docker/python/site-packages/ /usr/local/lib/python3.11/site-packages/
+#COPY ./docker/python/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY ./huggingface_model /usr/src/huggingface_model
 
 ARG FAST_API_MODE=development
