@@ -46,8 +46,10 @@ def startup_event():
     get_retriever()
     environment = g.env_settings.environment
     openai_chat_model = g.env_settings.openai_chat_model
+    openai_api_key = g.env_settings.openai_api_key
     logger.info(f"environment: {environment}")
     logger.info(f"openai_chat_model: {openai_chat_model}")
+    logger.info(f"openai_api_key: {openai_api_key}")
     scheduleModule.scheduler.start()
     logger.info(f"scheduler started")
     embedding_file_repository.get_embedding_file_list(next(database.get_db()))
