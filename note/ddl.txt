@@ -1,4 +1,4 @@
--- nchatbot.api_tracking definition
+-- public.api_tracking definition
 
 -- Drop table
 
@@ -25,7 +25,7 @@ ALTER TABLE api_tracking OWNER TO postgres;
 GRANT ALL ON TABLE api_tracking TO postgres;
 
 
--- nchatbot.attach_file definition
+-- public.attach_file definition
 
 -- Drop table
 
@@ -51,7 +51,7 @@ ALTER TABLE attach_file OWNER TO postgres;
 GRANT ALL ON TABLE attach_file TO postgres;
 
 
--- nchatbot.chatroom definition
+-- public.chatroom definition
 
 -- Drop table
 
@@ -82,7 +82,7 @@ ALTER TABLE chatroom OWNER TO postgres;
 GRANT ALL ON TABLE chatroom TO postgres;
 
 
--- nchatbot.chatroom_history definition
+-- public.chatroom_history definition
 
 -- Drop table
 
@@ -111,7 +111,7 @@ ALTER TABLE chatroom_history OWNER TO postgres;
 GRANT ALL ON TABLE chatroom_history TO postgres;
 
 
--- nchatbot.code_group definition
+-- public.code_group definition
 
 -- Drop table
 
@@ -137,7 +137,7 @@ ALTER TABLE code_group OWNER TO postgres;
 GRANT ALL ON TABLE code_group TO postgres;
 
 
--- nchatbot.embedding_file definition
+-- public.embedding_file definition
 
 -- Drop table
 
@@ -167,7 +167,7 @@ ALTER TABLE embedding_file OWNER TO postgres;
 GRANT ALL ON TABLE embedding_file TO postgres;
 
 
--- nchatbot.feedback definition
+-- public.feedback definition
 
 -- Drop table
 
@@ -191,13 +191,13 @@ CREATE TABLE feedback (
 
 -- Column comments
 
-COMMENT ON COLUMN nchatbot.feedback.feedback_id IS 'ID';
-COMMENT ON COLUMN nchatbot.feedback.contents IS '내용';
-COMMENT ON COLUMN nchatbot.feedback.image_path IS '캡처 이미지 경로';
-COMMENT ON COLUMN nchatbot.feedback.state_cd IS '처리상태코드';
-COMMENT ON COLUMN nchatbot.feedback.mgr_user_id IS '처리자';
-COMMENT ON COLUMN nchatbot.feedback.processing_detail IS '처리내용';
-COMMENT ON COLUMN nchatbot.feedback.processing_date IS '처리일자';
+COMMENT ON COLUMN public.feedback.feedback_id IS 'ID';
+COMMENT ON COLUMN public.feedback.contents IS '내용';
+COMMENT ON COLUMN public.feedback.image_path IS '캡처 이미지 경로';
+COMMENT ON COLUMN public.feedback.state_cd IS '처리상태코드';
+COMMENT ON COLUMN public.feedback.mgr_user_id IS '처리자';
+COMMENT ON COLUMN public.feedback.processing_detail IS '처리내용';
+COMMENT ON COLUMN public.feedback.processing_date IS '처리일자';
 
 -- Permissions
 
@@ -205,7 +205,7 @@ ALTER TABLE feedback OWNER TO postgres;
 GRANT ALL ON TABLE feedback TO postgres;
 
 
--- nchatbot."notice" definition
+-- public."notice" definition
 
 -- Drop table
 
@@ -226,10 +226,10 @@ CREATE TABLE "notice" (
 
 -- Column comments
 
-COMMENT ON COLUMN nchatbot."notice".notice_id IS 'ID';
-COMMENT ON COLUMN nchatbot."notice".contents IS '내용';
-COMMENT ON COLUMN nchatbot."notice".start_time IS '게시시작일시';
-COMMENT ON COLUMN nchatbot."notice".end_time IS '게시종료일시';
+COMMENT ON COLUMN public."notice".notice_id IS 'ID';
+COMMENT ON COLUMN public."notice".contents IS '내용';
+COMMENT ON COLUMN public."notice".start_time IS '게시시작일시';
+COMMENT ON COLUMN public."notice".end_time IS '게시종료일시';
 
 -- Permissions
 
@@ -237,7 +237,7 @@ ALTER TABLE "notice" OWNER TO postgres;
 GRANT ALL ON TABLE "notice" TO postgres;
 
 
--- nchatbot.unread_chat_message definition
+-- public.unread_chat_message definition
 
 -- Drop table
 
@@ -262,7 +262,7 @@ ALTER TABLE unread_chat_message OWNER TO postgres;
 GRANT ALL ON TABLE unread_chat_message TO postgres;
 
 
--- nchatbot."user" definition
+-- public."user" definition
 
 -- Drop table
 
@@ -290,7 +290,7 @@ CREATE TABLE "user" (
 
 -- Column comments
 
-COMMENT ON COLUMN nchatbot."user".mng_services IS '담당서비스';
+COMMENT ON COLUMN public."user".mng_services IS '담당서비스';
 
 -- Permissions
 
@@ -298,7 +298,7 @@ ALTER TABLE "user" OWNER TO postgres;
 GRANT ALL ON TABLE "user" TO postgres;
 
 
--- nchatbot.chat_message definition
+-- public.chat_message definition
 
 -- Drop table
 
@@ -328,7 +328,7 @@ ALTER TABLE chat_message OWNER TO postgres;
 GRANT ALL ON TABLE chat_message TO postgres;
 
 
--- nchatbot.chatbot_request_history definition
+-- public.chatbot_request_history definition
 
 -- Drop table
 
@@ -356,7 +356,7 @@ ALTER TABLE chatbot_request_history OWNER TO postgres;
 GRANT ALL ON TABLE chatbot_request_history TO postgres;
 
 
--- nchatbot.chatroom_user definition
+-- public.chatroom_user definition
 
 -- Drop table
 
@@ -384,7 +384,7 @@ ALTER TABLE chatroom_user OWNER TO postgres;
 GRANT ALL ON TABLE chatroom_user TO postgres;
 
 
--- nchatbot.code definition
+-- public.code definition
 
 -- Drop table
 
@@ -413,7 +413,7 @@ ALTER TABLE code OWNER TO postgres;
 GRANT ALL ON TABLE code TO postgres;
 
 
--- nchatbot.faq definition
+-- public.faq definition
 
 -- Drop table
 
@@ -440,7 +440,7 @@ ALTER TABLE faq OWNER TO postgres;
 GRANT ALL ON TABLE faq TO postgres;
 
 
--- nchatbot.qna definition
+-- public.qna definition
 
 -- Drop table
 
@@ -470,7 +470,7 @@ ALTER TABLE qna OWNER TO postgres;
 GRANT ALL ON TABLE qna TO postgres;
 
 
--- nchatbot.self_service_history definition
+-- public.self_service_history definition
 
 -- Drop table
 
