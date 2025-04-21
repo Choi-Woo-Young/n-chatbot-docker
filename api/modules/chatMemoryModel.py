@@ -17,14 +17,23 @@ class ChatMemoryModel:
     def get_chat_memory(self, chat_id):
         try:
             if chat_id not in self.chat_memory_dict:
+                # OpenAI API 설정
                 chat_llm = ChatOpenAI(
+                    # OpenAI API 키 설정
                     api_key=g.env_settings.openai_api_key,
+                    # OpenAI API 엔드포인트 URL
                     base_url=g.env_settings.openai_base_url,
-                    model=g.env_settings.openai_chat_model,  # "gpt-3.5-turbo",
+                    # 사용할 모델 지정 (기본값: gpt-3.5-turbo)
+                    model=g.env_settings.openai_chat_model,
+                    # 응답의 무작위성 조절 (0: 결정적, 1: 매우 무작위)
                     temperature=0.1,
+                    # 스트리밍 활성화 (실시간으로 응답을 받음)
                     streaming=True,
+                    # API 호출 실패 시 재시도 횟수
                     max_retries=1,
+                    # API 호출 타임아웃 시간 (초)
                     timeout=60,
+                    # 사용자 정의 콜백 핸들러 설정
                     callbacks=[
                         CustomChatCallbackHandler(Queue()),
                     ],
@@ -47,6 +56,8 @@ class ChatMemoryModel:
         
     
     # 대화 내용을 메모리에 저장
+    # TODO 코드 투어 - [LLM챗] 200. 대화 내용 메모리에 저장
+    # [keyword] ConversationBufferWindowMemory
     def save_context(self, chat_id, input, output):
         try:
             memory = self.get_chat_memory(chat_id)

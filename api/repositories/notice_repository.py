@@ -13,7 +13,7 @@ def get_notice_list(db: Session, is_current_notice:bool) -> models.NoticeModel:
         conditions = []
         conditions.append(Notice.delete_yn.isnot(True))
 
-        # TODO: 현재 유효한 공지사항만 조회하는 조건 추가
+        #현재 유효한 공지사항만 조회하는 조건 추가
         if is_current_notice:
             current_time = datetime.now().strftime('%Y%m%d%H%M%S')
             conditions.append(

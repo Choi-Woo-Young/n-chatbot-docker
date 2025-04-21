@@ -49,9 +49,11 @@ def create_choices_payload(previous_query: str, choice_type: str, items: list) -
 
 # --- Private Helper Functions for ask_chatbot Logic ---
 
+# TODO 코드 투어 - [LLM챗] 110. selected_cd 기반 셀프 서비스 처리 및 응답
 def _handle_self_service_flow(selected_cd: str, user_message: str, user_id: str, db: Session):
     """Handles the self-service flow based on selected_cd."""
-    # 전체 셀프서비스 목록 제공
+    
+    # 전체 셀프서비스 목록 응답
     if selected_cd == constants.ServiceCode.ALL:
         choices = create_choices_payload(
             user_message, "row",
@@ -82,47 +84,55 @@ def _handle_self_service_flow(selected_cd: str, user_message: str, user_id: str,
 
     return None # Not a self-service flow handled by selected_cd
 
+# TODO 코드 투어 - [LLM챗] 140. 현재 맥락과 발화 기반으로 service_cd 결정
 def _determine_service_code(current_service_cd: str, checked_service_cd: str, chat_id: int, db: Session):
-    """Determines the final service code based on current context and utterance check."""
     final_service_cd = current_service_cd
-    if '!' not in current_service_cd: # Service code not forced by user
+    
+    # 현재 서비스 코드가 사용자에 의해 강제 지정(!)되지 않은 경우
+    if '!' not in current_service_cd: 
         for item in g.service_list:
+            # 사용자 발화 체크/분석 결과에서 서비스 코드가 존재하는 경우, chatroom의 service_cd를 해당 서비스 코드로 업데이트
             if item["value"] in checked_service_cd:
                 final_service_cd = item["value"]
                 chatroom_repository.update_chatroom_service_cd(db=db, chat_id=chat_id, service_cd=final_service_cd)
                 break
     return final_service_cd
 
+
+# TODO 코드 투어 - [LLM챗] 120. 사용자 발화 기반 처리(selected_cd가 없는 경우)
 def _handle_utterance_based_flow(chat_message: models.ChatMessageModel, db: Session):
-    """Handles the flow based on user utterance analysis when selected_cd is not present."""
+    
+    # 사용자 발화
     user_message = chat_message.chat_message
 
-    # 1. 사용자 발화 체크/분석
+    # 사용자 발화 체크/분석  - 응답 포멧 : {"service_cd": "서비스 코드","converted_utterance": "변환된 발화"} >>
     check_result = checkUtteranceModule.check_utterance(user_message)
     logger.info(f'check_utterance: {check_result}')
     chat_message.converted_utterance = check_result["converted_utterance"]
     checked_service_cd = check_result["service_cd"]
 
-    # 2. 서비스 코드 결정 및 업데이트
+    # 서비스 코드 결정 및 업데이트 - 응답 포멧 : {"service_cd": "서비스 코드"} >>
     service_cd = _determine_service_code(chat_message.service_cd, checked_service_cd, chat_message.chat_id, db)
     chat_message.service_cd = service_cd # Update chat_message object for subsequent logic
     print(f'chat_message after check_utterance and service code determination: {chat_message}')
 
-    # 3. 서비스 코드가 결정되지 않은 경우: 서비스 선택 요청
+    # 서비스 코드가 결정되지 않은 경우: 서비스 선택 요청
     if not service_cd and "N/A" in checked_service_cd:
+        # 서비스 선택 요청 응답 생성 
         choices = create_choices_payload(user_message, "row", g.service_list)
         return create_plain_text_response("원하시는 서비스를 선택해주세요.", choices)
 
     # 4. 서비스 코드가 결정된 경우: 셀프서비스 문의 확인 또는 일반 문의 처리
     else:
-        # 셀프서비스관련 문의인지 판단
+        # 셀프서비스관련 문의인지 판단 - 응답 포멧 : {"self_service_yn": "Y/N", "self_service_cd": "서비스 코드"} >>
         self_service_info = selfServiceModule.check_self_service(chat_message)
 
         # 셀프서비스관련 문의가 아니거나, 해당 서비스가 없는 경우 -> 일반 챗봇 응답
         if self_service_info["self_service_yn"] != "Y" or self_service_info["self_service_cd"] == "NA":
+            
             return askBotModule.chat_with_bot(chat_message)
 
-        # 셀프서비스 관련 문의인 경우 -> 비밀번호 초기화 확인
+        # 셀프서비스 관련 문의인 경우 -> 비밀번호 초기화 확인 답변 응답
         else:
             self_service_cd = self_service_info["self_service_cd"]
             confirmation_message = g.self_service_info[self_service_cd] + " 서비스 비밀번호를 초기화 하시겠습니까?"
@@ -136,32 +146,34 @@ def _handle_utterance_based_flow(chat_message: models.ChatMessageModel, db: Sess
             return create_plain_text_response(confirmation_message, choices)
 
 # --- Main Endpoint ---
-
+#TODO 코드 투어 - [LLM챗] 100. 챗봇에게 질문([POST]/chatbot/ask)
+# [keyword] controller
 @router.post("/ask")
 async def ask_chatbot(chat_message: models.ChatMessageModel, db: Session = Depends(get_db)):
     try:
         logger.info(f'ask_chatbot request: {chat_message}')
 
-        # 1. 입력 메시지 정제
+        # 입력 메시지 정제
         cleaned_message = safetyFilterModule.clean(chat_message.chat_message)
         if not cleaned_message:
             return create_plain_text_response("메시지 내용이 없습니다.")
         chat_message.chat_message = cleaned_message
 
-        # 2. 채팅 메시지 등록 및 서비스 코드 초기 업데이트 ( "!" 제거 )
+        # chat message 등록
         chatroom_repository.register_chat_message(db=db, chat_message_model=chat_message)
+        
+        # chatroom 테이블의 service_cd 업데이트
         if chat_message.service_cd:
-            chatroom_repository.update_chatroom_service_cd(db=db, chat_id=chat_message.chat_id, service_cd=chat_message.service_cd.replace("!", ""))
             chat_message.service_cd = chat_message.service_cd.replace("!", "")
-
-        # 3. selected_cd 기반 셀프 서비스 처리
-        selected_cd_response = _handle_self_service_flow(
-            chat_message.selected_cd, chat_message.chat_message, chat_message.user_id, db
-        )
+            chatroom_repository.update_chatroom_service_cd(db=db, chat_id=chat_message.chat_id, service_cd=chat_message.service_cd)
+            
+        # selected_cd 기반 셀프 서비스 처리 및 응답 >>
+        selected_cd_response = _handle_self_service_flow(chat_message.selected_cd, chat_message.chat_message, chat_message.user_id, db)
+        
         if selected_cd_response:
             return selected_cd_response
 
-        # 4. selected_cd가 없는 경우, 사용자 발화 기반 처리
+        # selected_cd가 없는 경우, 사용자 발화 기반 처리 >>
         return _handle_utterance_based_flow(chat_message, db)
 
     except Exception as e:

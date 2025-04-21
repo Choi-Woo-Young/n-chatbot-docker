@@ -46,7 +46,6 @@ export const authConfig = {
   ],
   callbacks: {
     async authorized({ auth, request: { nextUrl, ip } }) {
-      //TODO : 로직 확인 필요
       console.log("authorized callback -ip:" + ip);
       console.log("authorized callback -nextUrl:" + nextUrl);
       console.log("authorized callback:" + JSON.stringify(auth?.user));

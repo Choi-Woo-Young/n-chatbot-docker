@@ -58,18 +58,26 @@ def get_user_detail(user_id: str, db: Session):
         logger.error(f"get_user_detail: {e}")
         raise HTTPException(status_code=500, detail="사용자 정보 조회에 실패하였습니다.")
 
-#self-service 판단
+# TODO 코드 투어 - [LLM챗] 150. 셀프서비스 판단
 def check_self_service(chat_message: models.ChatMessageModel):
     try:
         query = chat_message.chat_message
         
+        # OpenAI API 설정
         no_streaming_llm = ChatOpenAI(
+            # OpenAI API 키 설정
             api_key=g.env_settings.openai_api_key,
+            # OpenAI API 엔드포인트 URL
             base_url=g.env_settings.openai_base_url,
-            model=g.env_settings.openai_chat_model,  # "gpt-3.5-turbo",
+            # 사용할 모델 지정 (기본값: gpt-3.5-turbo)
+            model=g.env_settings.openai_chat_model,
+            # 응답의 무작위성 조절 (0: 결정적, 1: 매우 무작위)
             temperature=0.1,
+            # 스트리밍 비활성화 (전체 응답을 한 번에 받음)
             streaming=False,
+            # API 호출 실패 시 재시도 횟수
             max_retries=1,
+            # API 호출 타임아웃 시간 (초)
             timeout=60,
         )
         
