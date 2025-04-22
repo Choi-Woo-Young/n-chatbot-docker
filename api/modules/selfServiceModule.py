@@ -58,7 +58,7 @@ def get_user_detail(user_id: str, db: Session):
         logger.error(f"get_user_detail: {e}")
         raise HTTPException(status_code=500, detail="사용자 정보 조회에 실패하였습니다.")
 
-# TODO 코드 투어 - [LLM챗] 150. 셀프서비스 판단
+# TODO 코드 투어 - [봇과채팅](백엔드) 150. 셀프서비스 판단
 def check_self_service(chat_message: models.ChatMessageModel):
     try:
         query = chat_message.chat_message

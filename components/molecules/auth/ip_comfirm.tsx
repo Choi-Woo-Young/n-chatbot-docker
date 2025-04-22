@@ -8,48 +8,58 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { ReactTyped } from "react-typed";
-import dynamic from "next/dynamic";
 import GuideTour from "../cmm/guide-tour";
-import { Placement } from "react-joyride";
 import { guideTourStore } from "@/store/guide-tour-store";
 
+// 컴포넌트 Props 타입 정의
 interface IpConfirmProps {
-  user: UsersType;
-  directLink?: string;
+  user: UsersType;          // 사용자 정보
+  directLink?: string;      // 리다이렉션 링크
 }
 
-export function IpConfirm({ user, directLink }: IpConfirmProps) {
-  console.log("IpConfirm user >>> ", user);
-  console.log("IpConfirm directLink >>> ", directLink);
+
+// TODO 코드 투어 - [로그인] 120. 사용자 확인 컴포넌트
+/**
+ * IP 기반 사용자 확인 컴포넌트
+ * @param user - 사용자 정보
+ * @param directLink - 리다이렉션 링크
+ * @returns IP 확인 UI
+ */
+export function IpConfirm({ user, directLink }: Readonly<IpConfirmProps>) {
+  // 가이드 투어 스텝 가져오기
   const { getGuideTourSteps } = guideTourStore();
 
+  // 리다이렉션 링크 기본값 설정
+  const redirectLink = directLink && directLink !== "undefined" 
+    ? directLink 
+    : "/my/request";
 
-  if (!directLink || directLink == undefined || directLink == "undefined") {
-    directLink = "/my/request";
-  }
-
+  // 사용자 정보가 없는 경우 홈으로 리다이렉션
   useEffect(() => {
     if (!user.user_nm) {
       window.location.href = "/home";
     }
   }, [user]);
 
-  console.log("IpConfirm directLink >>> ", directLink);
   return (
     <div className="flex w-full h-screen justify-center items-center bg-nice-bg">
-      <GuideTour location="login" userInfo={user}  run={true} steps={getGuideTourSteps("login")} />
+      {/* 가이드 투어 컴포넌트 */}
+      <GuideTour 
+        location="login" 
+        userInfo={user}  
+        run={true} 
+        steps={getGuideTourSteps("login")} 
+      />
+      
       <Card className="w-[460px] p-8 border-none bg-transparent">
         <CardHeader>
           {user.user_nm ? (
-            <CardTitle
-              id="hello"
-              className="flex justify-center w-full text-white"
-            >
+            // 사용자 정보가 있는 경우 환영 메시지
+            <CardTitle id="hello" className="flex justify-center w-full text-white">
               <ReactTyped
                 strings={[
                   "안녕하세요!",
@@ -57,47 +67,36 @@ export function IpConfirm({ user, directLink }: IpConfirmProps) {
                 ]}
                 typeSpeed={60}
                 backSpeed={40}
-                // loop
               />
-              {/* {user.dept_nm} {user.user_nm}님 반갑습니다. */}
             </CardTitle>
           ) : (
+            // 사용자 정보가 없는 경우 새로고침 안내
             <CardTitle className="flex justify-center w-full text-white">
               사용자 확인을 위해 새로고침 버튼을 눌러주세요.
             </CardTitle>
           )}
         </CardHeader>
+
         <CardContent className="pb-0 font-bold">
           {(user.user_nm ?? "").trim() !== "" ? (
+            // 사용자 정보가 있는 경우 로그인 버튼 표시
             <div className="w-full flex flex-col gap-4">
-              {/* <form
-                action={async (formData) => {
-                  "use server";
-                  await signIn("credentials", {
-                    // email: formData.get("email"),
-                    // password: formData.get("password"),
-                    // redirect: true,
-                    // redirectTo: "/home",
-                  });
-                }}
-              > */}
-              {/* <Label className="text-xl text-center">
-                  {user.dept_nm} {user.user_nm} {user.position_nm}님으로 로그인하시겠습니까?
-                </Label> */}
+              {/* 로그인 버튼 */}
               <Button
                 id="login-button"
                 onClick={() =>
                   signIn("credentials", {
-                    nextUrl: directLink ?? "/my/request",
+                    nextUrl: redirectLink,
                     redirect: true,
-                    redirectTo: directLink ?? "/my/request",
+                    redirectTo: redirectLink,
                   })
                 }
                 className="mt-4 w-full h-16 text-lg bg-nice-blue-500 rounded-full hover:bg-nice-blue-700 shadow-md shadow-nice-gray-9ea/30 cursor-pointer"
               >
                 {user.dept_nm} {user.user_nm} 계정으로 로그인
               </Button>
-              {/* </form> */}
+              
+              {/* 다른 사용자 확인 버튼 */}
               <Link href="/confirm">
                 <Button
                   id="iamnot"
@@ -108,6 +107,7 @@ export function IpConfirm({ user, directLink }: IpConfirmProps) {
               </Link>
             </div>
           ) : (
+            // 사용자 정보가 없는 경우 새로고침 버튼 표시
             <div className="grid w-full items-center gap-4 mt-8">
               <Link href="/home">
                 <Button className="w-full h-16 bg-nice-blue-500 rounded-full">

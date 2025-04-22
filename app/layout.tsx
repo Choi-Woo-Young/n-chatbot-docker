@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-// import { SessionProvider } from "next-auth/react";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "./providers";

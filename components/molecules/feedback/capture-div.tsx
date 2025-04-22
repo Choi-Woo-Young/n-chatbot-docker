@@ -6,7 +6,7 @@ import { createContext, RefObject, ReactNode, useRef } from "react";
 export const CaptureDivContext =
   createContext<RefObject<HTMLDivElement> | null>(null);
 
-export function CaptureDivProvider({ children }: { children: ReactNode }) {
+export function CaptureDivProvider({ children }: Readonly<{ children: ReactNode }>) {
   const divRef = useRef<HTMLDivElement>(null);
 
   return (

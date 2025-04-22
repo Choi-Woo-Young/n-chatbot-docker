@@ -3,12 +3,14 @@ import { CaptureDivProvider } from "@/components/molecules/feedback/capture-div"
 import FeedbackButton from "@/components/molecules/feedback/feedback-button";
 import { FlowingText } from "@/components/molecules/notice/flowing-text";
 import { ReactNode } from "react";
+
+// TODO 코드 투어 - [봇과채팅](프론트) 110. 화면 레이아웃 컴포넌트
 export default async function AuthLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  
+  // 사이드바 컴포넌트 렌더링
   const sidebar = await Sidebar({ className: "hidden lg:block" });
 
   return (

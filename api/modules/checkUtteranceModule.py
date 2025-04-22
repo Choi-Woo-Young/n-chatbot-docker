@@ -21,7 +21,7 @@ def thread_check_utterance(chat_message: str):
                     "chat_message": chat_message})
     thread.start()
 
-# TODO 코드 투어 - [LLM챗] 130. 사용자 발화 분석
+# TODO 코드 투어 - [봇과채팅](백엔드) 130. 사용자 발화 분석
 def check_utterance(chat_message: str) -> dict:
     try:
         logger.info(f'check_utterance: {chat_message}')

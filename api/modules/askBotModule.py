@@ -35,13 +35,13 @@ from collections import Counter
 from konlpy.tag import Okt
 
 
-# TODO 코드 투어 - [LLM챗] 160. **일반 챗봇 응답
+# TODO 코드 투어 - [봇과채팅](백엔드) 160. **일반 챗봇 응답
 def chat_with_bot(chat_message: models.ChatMessageModel):
     
     # async 응답을 streaming 응답으로 변환
     return StreamingResponse(response_generator(chat_message, Queue()), media_type='text/event-stream')
 
-# TODO 코드 투어 - [LLM챗] 170. 비동기 챗봇 응답
+# TODO 코드 투어 - [봇과채팅](백엔드) 170. 비동기 챗봇 응답
 async def response_generator(chat_message: models.ChatMessageModel, streamer_queue: Queue):
     try:
         response_text = ""
@@ -81,18 +81,18 @@ async def response_generator(chat_message: models.ChatMessageModel, streamer_que
         streamer_queue.task_done()
 
 
-# TODO 코드 투어 - [LLM챗] 180. 챗봇 응답 생성 시작
+# TODO 코드 투어 - [봇과채팅](백엔드) 180. 챗봇 응답 생성 시작
 def start_generation(chat_message: models.ChatMessageModel, streamer_queue: Queue):
     # 챗봇 응답 생성 스레드 시작(동시 여러 사용자가 챗봇 이용하는 경우를 위해 동시성 처리)
     thread = Thread(target=generate, kwargs={"chat_message": chat_message, "streamer_queue": streamer_queue})
     thread.start()
 
-# TODO 코드 투어 - [LLM챗] 210. 챗봇 응답 생성 스레드 시작
+# TODO 코드 투어 - [봇과채팅](백엔드) 210. 챗봇 응답 생성 스레드 시작
 def generate(chat_message: models.ChatMessageModel, streamer_queue: Queue):
 
     chain_with_runnable_with_message_history(chat_message, streamer_queue)
 
-# TODO 코드 투어 - [LLM챗] 220. 챗봇 응답 생성(RunnableWithMessageHistory를 이용)
+# TODO 코드 투어 - [봇과채팅](백엔드) 220. 챗봇 응답 생성(RunnableWithMessageHistory를 이용)
 # [keyword] RunnableWithMessageHistory
 def chain_with_runnable_with_message_history(chat_message: models.ChatMessageModel, streamer_queue: Queue):
     try:
@@ -267,7 +267,7 @@ def chain_with_runnable_with_message_history(chat_message: models.ChatMessageMod
         return
 
 
-# TODO 코드 투어 - [LLM챗] 190. 챗봇 응답 유효성 검사
+# TODO 코드 투어 - [봇과채팅](백엔드) 190. 챗봇 응답 유효성 검사
 def is_valid_answer(answer: str) -> bool:
     try:
         logger.info(f'answer: {answer}')

@@ -49,7 +49,7 @@ def create_choices_payload(previous_query: str, choice_type: str, items: list) -
 
 # --- Private Helper Functions for ask_chatbot Logic ---
 
-# TODO 코드 투어 - [LLM챗] 110. selected_cd 기반 셀프 서비스 처리 및 응답
+# TODO 코드 투어 - [봇과채팅](백엔드) 110. selected_cd 기반 셀프 서비스 처리 및 응답
 def _handle_self_service_flow(selected_cd: str, user_message: str, user_id: str, db: Session):
     """Handles the self-service flow based on selected_cd."""
     
@@ -84,7 +84,7 @@ def _handle_self_service_flow(selected_cd: str, user_message: str, user_id: str,
 
     return None # Not a self-service flow handled by selected_cd
 
-# TODO 코드 투어 - [LLM챗] 140. 현재 맥락과 발화 기반으로 service_cd 결정
+# TODO 코드 투어 - [봇과채팅](백엔드) 140. 현재 맥락과 발화 기반으로 service_cd 결정
 def _determine_service_code(current_service_cd: str, checked_service_cd: str, chat_id: int, db: Session):
     final_service_cd = current_service_cd
     
@@ -99,7 +99,7 @@ def _determine_service_code(current_service_cd: str, checked_service_cd: str, ch
     return final_service_cd
 
 
-# TODO 코드 투어 - [LLM챗] 120. 사용자 발화 기반 처리(selected_cd가 없는 경우)
+# TODO 코드 투어 - [봇과채팅](백엔드) 120. 사용자 발화 기반 처리(selected_cd가 없는 경우)
 def _handle_utterance_based_flow(chat_message: models.ChatMessageModel, db: Session):
     
     # 사용자 발화
@@ -146,7 +146,7 @@ def _handle_utterance_based_flow(chat_message: models.ChatMessageModel, db: Sess
             return create_plain_text_response(confirmation_message, choices)
 
 # --- Main Endpoint ---
-#TODO 코드 투어 - [LLM챗] 100. 챗봇에게 질문([POST]/chatbot/ask)
+#TODO 코드 투어 - [봇과채팅](백엔드) 100. 챗봇에게 질문([POST]/chatbot/ask)
 # [keyword] controller
 @router.post("/ask")
 async def ask_chatbot(chat_message: models.ChatMessageModel, db: Session = Depends(get_db)):

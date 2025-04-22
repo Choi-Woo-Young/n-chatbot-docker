@@ -1,7 +1,15 @@
 "use client";
 
+import { ButtonProps } from "@/components/ui/button";
 import { FooterText } from "@/components/ui/footer";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   useChatMessageRegister,
@@ -9,7 +17,12 @@ import {
   useChatroomMessageList,
 } from "@/lib/hooks/client/use-chatroom-fetcher";
 import { useClientSession } from "@/lib/hooks/client/use-client-session";
-import {
+import { useEmbeddingFileList } from "@/lib/hooks/client/use-embedding-file-fetcher";
+import { useSelfServiceStore } from "@/store/self-service-store";
+import clsx from "clsx";
+import { CalendarDays, Send, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, {
   ChangeEvent,
   KeyboardEvent,
   forwardRef,
@@ -18,29 +31,21 @@ import {
   useRef,
   useState,
 } from "react";
-import { ChatMsg } from "./chat-msg";
-import { ChattingRequestButton } from "./chatting-request-button";
-import Image from "next/image";
-import { CalendarDays, Send, XIcon } from "lucide-react";
-import { useSelfServiceStore } from "@/store/self-service-store";
-import clsx from "clsx";
-import { ButtonProps } from "@/components/ui/button";
-import React from "react";
-import { ChattingCloseButton } from "./chatting-close-button";
-import { useRouter } from "next/navigation";
-import { useEmbeddingFileList } from "@/lib/hooks/client/use-embedding-file-fetcher";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Placement } from "react-joyride";
 import GuideTour from "../cmm/guide-tour";
+import { ChatMsg } from "./chat-msg";
+import { ChattingCloseButton } from "./chatting-close-button";
+import { ChattingRequestButton } from "./chatting-request-button";
 
+// TODO 코드 투어 - [봇과채팅](프론트) 150. 봇 채팅 패널 컴포넌트
+/**
+ * 채팅 패널 컴포넌트 Props 인터페이스
+ * @property {number} chatId - 현재 채팅방 ID
+ * @property {(chatId: number | null) => void} setChatId - 채팅방 ID 설정 함수
+ * @property {boolean} refresh - 새로고침 상태
+ * @property {(refresh: boolean) => void} setRefresh - 새로고침 상태 설정 함수
+ * @property {ChatRoomType[]} chatroomList - 채팅방 목록
+ */
 export interface ChatPanelProps {
   chatId: number;
   setChatId: (chatId: number | null) => void;
@@ -49,13 +54,21 @@ export interface ChatPanelProps {
   chatroomList: ChatRoomType[];
 }
 
+/**
+ * LLM 채팅 패널 컴포넌트
+ * - 채팅 메시지 표시 및 입력
+ * - 셀프서비스 기능 제공
+ * - 채팅방 상태 관리
+ * - 가이드 투어 제공
+ */
 export function LlmChatPanel({
   chatId,
   setChatId,
   refresh,
   setRefresh,
   chatroomList,
-}: ChatPanelProps) {
+}: Readonly<ChatPanelProps>) {
+  // 가이드 투어 단계 정의
   const steps = [
     {
       target: "#chat-input",
@@ -86,43 +99,43 @@ export function LlmChatPanel({
       placement: "bottom" as Placement,
     },
   ];
-  const router = useRouter();
-  const user = useClientSession();
+
+  // 상태 관리
+  const router = useRouter(); // 라우터 이동
+  const user = useClientSession(); // 사용자 세션
+
   const {
     trigger: embeddingFileListTrigger,
     isMutating: isEmbeddingFileListMutating,
-  } = useEmbeddingFileList();
+  } = useEmbeddingFileList(); // 임베딩 파일 목록 조회
   const [embeddingFileList, setEmbeddingFileList] = useState<
     EmbeddingFileType[]
-  >([]);
-  const [chatroom, setChatroom] = useState<ChatRoomType>();
-  const [chatMessages, setChatMessages] = useState<ChatMsgType[]>([]);
-  const { trigger: chatroomMessageListTrigger } = useChatroomMessageList();
-  const { trigger: chatroomTrigger } = useChatroom();
-  const { trigger: chatMessageRegisterTrigger } = useChatMessageRegister();
-  const [msgValue, setMsgValue] = useState("");
-  const [botMsg, setBotMsg] = useState("");
-  const [isBotTyping, setIsBotTyping] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [isSharpButton, setIsSharpButton] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
-  const [serviceCd, setServiceCd] = useState("");
+  >([]); // 임베딩 파일 목록
 
+  const [chatroom, setChatroom] = useState<ChatRoomType>(); // 채팅방 정보
+  const { trigger: chatroomTrigger } = useChatroom(); // 채팅방 정보 조회
+
+  const [chatMessages, setChatMessages] = useState<ChatMsgType[]>([]); // 채팅 메시지 목록
+  const { trigger: chatroomMessageListTrigger } = useChatroomMessageList(); // 채팅 메시지 목록 조회
+  const { trigger: chatMessageRegisterTrigger } = useChatMessageRegister(); // 채팅 메시지 저장
+
+  const [msgValue, setMsgValue] = useState(""); // 채팅 메시지 입력값
+  const [botMsg, setBotMsg] = useState(""); // 봇 메시지
+
+  const [isBotTyping, setIsBotTyping] = useState(false); // 봇 입력 중 여부
+
+  const scrollAreaRef = useRef<HTMLDivElement>(null); // 스크롤 영역 참조
+
+  const [isSharpButton, setIsSharpButton] = useState(false); // 셀프서비스 버튼 표시 여부
+
+  const [isAuth, setIsAuth] = useState(false); // 권한 여부
+
+  const [serviceCd, setServiceCd] = useState(""); // 서비스 코드
+
+  // 임베딩 파일 목록 초기화
   useEffect(() => {
     embeddingFileListTrigger().then((data) => {
-      console.log(
-        "llm-chat-pannel.tsx: useEffect: embeddingFileListTrigger: data:",
-        data
-      );
-      //data.value에 LAW가 포함되어 있으면 data.value를 LAW로, data.name을 내규로 변경
-      data.forEach((element: EmbeddingFileType) => {
-        if (element.service_cd?.includes("LAW")) {
-          element.service_cd = "LAW";
-          element.service_name = "내규";
-        }
-      });
-
-      //data 중복 제거
+      // 중복 제거 (accumulator 패턴 사용)
       const uniqueData = data.reduce(
         (acc: EmbeddingFileType[], current: EmbeddingFileType) => {
           const x = acc.find((item) => item.service_cd === current.service_cd);
@@ -134,26 +147,11 @@ export function LlmChatPanel({
         },
         []
       );
-
       setEmbeddingFileList(uniqueData);
     });
   }, []);
 
-  //챗팅 메시지 리스트 조회
-  const chatMsgListData = useCallback(async () => {
-    console.log("llm-chat-pannel.tsx: chatMsgListData: chatId:", chatId);
-    if (chatId && chatId != 0 && chatId != null) {
-      const data = await chatroomMessageListTrigger({
-        body: { chatId: chatId },
-      });
-      console.log("llm-chat-pannel.tsx: chatMsgListData: data:", data);
-      setChatMessages(data);
-      isBotTyping && setIsBotTyping(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatId]);
-
-  //채팅방 정보 조회
+  // 채팅방 정보 조회
   const chatroomData = useCallback(async () => {
     const data =
       chatId != 0 &&
@@ -162,43 +160,48 @@ export function LlmChatPanel({
     setChatroom(data);
     setServiceCd(data?.service_cd ?? "");
     setMsgValue("");
-
-    // if (
-    //   data?.user_id == user?.user_id ||
-    //   data?.mgr_user_id == user?.user_id ||
-    //   user?.role_cd == "ADM" ||
-    //   data?.chatroom_user_id_list?.includes(user?.user_id!)
-    // ) {
-    //   setIsAuth(true);
-    // } else {
-    //   setIsAuth(false);
-    // }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]);
 
-  useEffect(() => {
-    if (
-      chatroom?.user_id == user?.user_id ||
-      chatroom?.mgr_user_id == user?.user_id ||
-      user?.role_cd == "ADM" ||
-      chatroom?.chatroom_user_id_list?.includes(user?.user_id!) ||
-      (chatroom?.state_cd == "CRSTT030" && user?.role_cd == "HELP")
-    ) {
-      setIsAuth(true);
-    } else {
-      setIsAuth(false);
+  // 채팅 메시지 목록 조회
+  const chatMsgListData = useCallback(async () => {
+    if (chatId && chatId != 0 && chatId != null) {
+      const data = await chatroomMessageListTrigger({
+        body: { chatId: chatId },
+      });
+      setChatMessages(data);
+      isBotTyping && setIsBotTyping(false);
     }
-  }, [user]);
+  }, [chatId]);
 
+
+  // **채팅방 ID 변경 시 데이터 갱신
   useEffect(() => {
     if (chatId && chatId != 0 && chatId != null) {
-      chatMsgListData();
       chatroomData();
+      chatMsgListData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]);
 
+  // 사용자 권한 확인
+  useEffect(() => {
+    const isChatroomOwner = chatroom?.user_id === user?.user_id; // 채팅방 소유자
+    const isChatroomManager = chatroom?.mgr_user_id === user?.user_id; // 채팅방 관리자
+    const isSystemAdmin = user?.role_cd === "ADM"; // 시스템 관리자
+    const isChatroomParticipant = chatroom?.chatroom_user_id_list?.includes(user?.user_id!); // 채팅방 참여자
+    const isHelpDeskInWaiting = chatroom?.state_cd === "CRSTT030" && user?.role_cd === "HELP"; // 담당자, 지원대기
+
+    const hasAccess = isChatroomOwner || 
+                     isChatroomManager || 
+                     isSystemAdmin || 
+                     isChatroomParticipant || 
+                     isHelpDeskInWaiting;
+
+    setIsAuth(hasAccess);
+  }, [user]);
+
+
+
+  // 메시지 목록 변경 시 스크롤 위치 조정
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop =
@@ -206,7 +209,8 @@ export function LlmChatPanel({
     }
   }, [chatMessages, isBotTyping, botMsg]);
 
-  // 셀프 서비스
+
+  // **셀프서비스 액션 처리
   const { action, updateActions } = useSelfServiceStore((state) => state);
   useEffect(() => {
     if (
@@ -214,28 +218,27 @@ export function LlmChatPanel({
       action.value !== "" &&
       action.previous_query !== ""
     ) {
-      console.log("*********llm-chat-pannel.tsx: useEffect: action:", action);
-
       if (action.type == "SERVICE_CD") {
         setServiceCd(action.value);
       }
-
+      // 봇 입력 중이 아니면 채팅 전송
       !isBotTyping && sendChat(action);
+      // 액션 초기화
       updateActions("", "", "", "");
     }
   }, [action]);
 
+
+  // 새로고침 시 데이터 갱신
   useEffect(() => {
     setChatMessages([]);
     chatroomMessageListTrigger({ body: { chatId: chatId } }).then((data) => {
       setChatMessages(data);
     });
-    chatId != 0 &&
-      chatroomTrigger({ body: { chatId: chatId } }).then((data) => {
-        setChatroom(data);
-      });
+    chatId != 0 &&  chatroomTrigger({ body: { chatId: chatId } }).then((data) => { setChatroom(data);});
   }, [refresh]);
 
+  // 입력값 변경 처리
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -248,6 +251,7 @@ export function LlmChatPanel({
     }
   };
 
+  // 엔터 키 입력 처리
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (
       msgValue.trim() !== "" &&
@@ -261,16 +265,19 @@ export function LlmChatPanel({
     }
   };
 
+  // 메시지 전송 처리
   const handleSubmit = () => {
     if (msgValue) {
       sendChat(msgValue);
     }
   };
 
+  // 서비스 코드 선택 처리
   const handleSelectServiceCd = (value: string) => {
     setServiceCd(value);
   };
 
+  // 메시지 전송 및 응답 처리
   const sendChat = async (msg: string | SelfServiceButtonType) => {
     let selected_cd = "";
     setIsSharpButton(false);
@@ -280,6 +287,7 @@ export function LlmChatPanel({
       setServiceCd(msg.value);
     }
 
+    // 특수 셀프서비스 코드 처리
     if (msg === "내부 그룹웨어 비밀번호 초기화") {
       selected_cd = "NICE_NGROUPWARE_SVC";
     } else if (msg === "외부 그룹웨어 비밀번호 초기화") {
@@ -288,6 +296,7 @@ export function LlmChatPanel({
       selected_cd = "NICE_WEBMAIL_SVC";
     }
 
+    // 새 메시지 생성
     const newMessage: ChatMsgType = {
       chat_id: chatId,
       user_id: user?.user_id!,
@@ -301,15 +310,14 @@ export function LlmChatPanel({
     };
     chatMessages.push(newMessage);
     setChatMessages(chatMessages);
-    // setMsgValue("");
-    setTimeout(() => {
-      setMsgValue("");
-    }, 10);
+    setTimeout(() => { setMsgValue(""); }, 10); // 입력값 초기화
 
+    // 봇 응답 처리
     setIsBotTyping(true);
+
     let botMessageContent = "";
 
-    // 봇에게 메시지 보내기
+    // API 요청 데이터 준비
     const bodyParam = !isSelfService
       ? newMessage
       : {
@@ -326,15 +334,15 @@ export function LlmChatPanel({
             .slice(0, 16),
           service_cd: msg.type == "SERVICE_CD" ? msg.value : serviceCd,
         };
-    //console.log("*********llm-chat-pannel.tsx: sendChat: bodyParam:", bodyParam);
+
+    // **API 호출 및 스트림 처리
     const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: {  "Content-Type": "application/json", },
       body: JSON.stringify(bodyParam),
     });
 
+    // **응답 본문 없는 경우
     if (!res.body) {
       setIsBotTyping(false);
       console.error("No response body");
@@ -348,10 +356,12 @@ export function LlmChatPanel({
           .slice(0, 16),
         service_cd: serviceCd,
       };
+
       setChatMessages([...chatMessages, botMessage]);
       return;
     }
 
+    // **응답 본문 있는 경우, 스트림 처리
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     while (true) {
@@ -359,6 +369,7 @@ export function LlmChatPanel({
       if (done) {
         setIsBotTyping(false);
 
+        // 봇 메시지 저장
         let botMessage: ChatMsgType = {
           chat_id: chatId,
           user_id: 0,
@@ -375,7 +386,7 @@ export function LlmChatPanel({
         setChatMessages(chatMessages);
         botMessageContent = "";
 
-        //봇 메시지를 DB에 저장
+        // DB에 봇 메시지 저장
         const resultChatMsg: ChatMsgType = await chatMessageRegisterTrigger({
           body: botMessage,
         });
@@ -392,57 +403,7 @@ export function LlmChatPanel({
     }
   };
 
-  if (!chatId) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center">
-        {/* <Image
-          src="/pig.png"
-          width={500}
-          height={500}
-          alt="Picture of the author"
-        /> */}
-        <Label>채팅방이 선택되지 않았습니다.</Label>
-      </div>
-    );
-  }
-
-  if (!user || !user?.user_id) {
-    router.push("/sign-in");
-    // return (
-    //   <div className="w-full h-full flex flex-col items-center justify-center">
-    //     <Label>사용자 정보가 없습니다. 다시 로그인해 주세요.</Label>
-    //   </div>
-    // );
-  }
-
-  if (chatId && (!chatMessages || chatMessages.length < 0)) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center">
-        {/* <Image
-        src="/pig.png"
-        width={500}
-        height={500}
-        alt="Picture of the author"
-      /> */}
-        <Label>대화 내용이 없습니다.</Label>
-      </div>
-    );
-  }
-
-  if (!isAuth) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center">
-        {/* <Image
-        src="/pig.png"
-        width={500}
-        height={500}
-        alt="Picture of the author"
-      /> */}
-        <Label>해당 채팅방에 대한 권한이 없습니다.</Label>
-      </div>
-    );
-  }
-
+  // 마지막 채팅 날짜 표시 처리
   let lastChangedDate = "";
   const handleLastChatDate = (date: string) => {
     const chatDate = date.split("T")[0].replaceAll("-", ".");
@@ -461,6 +422,38 @@ export function LlmChatPanel({
     }
   };
 
+  // 조건부 렌더링: 채팅방이 선택되지 않은 경우
+  if (!chatId) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <Label>채팅방이 선택되지 않았습니다.</Label>
+      </div>
+    );
+  }
+
+  // 조건부 렌더링: 사용자 인증이 필요한 경우
+  if (!user || !user?.user_id) {
+    router.push("/sign-in");
+  }
+
+  // 조건부 렌더링: 채팅 메시지가 없는 경우
+  if (chatId && (!chatMessages || chatMessages.length < 0)) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <Label>대화 내용이 없습니다.</Label>
+      </div>
+    );
+  }
+
+  // 조건부 렌더링: 권한이 없는 경우
+  if (!isAuth) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <Label>해당 채팅방에 대한 권한이 없습니다.</Label>
+      </div>
+    );
+  }
+
   return (
     <div
       className={clsx(
@@ -471,6 +464,7 @@ export function LlmChatPanel({
         }
       )}
     >
+      {/* 채팅방 헤더 */}
       <div className="flex justify-between items-center px-6 rounded-t-xl border border-b-nice-gray-9ea/50">
         <h2 className="text-lg font-semibold h-20 flex items-center">
           {chatId}번 채팅방에서{" "}
@@ -485,8 +479,6 @@ export function LlmChatPanel({
             : chatroom?.state_cd === "CRSTT050"
             ? "대화 종료"
             : "상태없음"}
-          {/* {" / "}
-          서비스코드: {serviceCd} */}
         </h2>
         <div className="flex items-center gap-2">
           <div>
@@ -522,6 +514,7 @@ export function LlmChatPanel({
         </div>
       </div>
 
+      {/* 채팅 메시지 영역 */}
       {chatId && chatMessages && chatMessages.length > 0 ? (
         <div className="overflow-auto px-6" ref={scrollAreaRef}>
           {chatMessages.map((msg, index) => (
@@ -538,9 +531,9 @@ export function LlmChatPanel({
             </React.Fragment>
           ))}
 
+          {/* 봇 입력 중 표시 */}
           {isBotTyping && (
             <>
-              {/* key 는 어디에 쓰는 것일까 */}
               {isBotTyping && botMsg.length == 0 ? (
                 <ChatMsg
                   key={99999999}
@@ -563,6 +556,7 @@ export function LlmChatPanel({
         <div className="flex-grow overflow-auto"></div>
       )}
 
+      {/* 채팅 입력 영역 */}
       <div
         className={clsx(
           `bg-nice-gray-e3e px-6 rounded-b-xl absolute bottom-0 h-28 w-full`,
@@ -574,6 +568,7 @@ export function LlmChatPanel({
       >
         {chatroom?.state_cd == "CRSTT010" && (
           <>
+            {/* 셀프서비스 버튼 영역 */}
             {isSharpButton && (
               <div className="h-20 w-full flex items-center bg-nice-gray-f5f rounded-t-xl relative">
                 <div className="flex items-center py-5 px-3 text-sm gap-3">
@@ -601,6 +596,8 @@ export function LlmChatPanel({
                 </button>
               </div>
             )}
+
+            {/* 채팅 입력 폼 */}
             <div
               id="chat-input"
               className={clsx(
@@ -624,6 +621,8 @@ export function LlmChatPanel({
                 onChange={(e) => handleInputChange(e)}
                 onKeyDown={(e) => handleKeyDown(e)}
               />
+
+              {/* 서비스 선택 드롭다운 */}
               {!isEmbeddingFileListMutating && (
                 <div id="select_service">
                   <Select
@@ -647,6 +646,7 @@ export function LlmChatPanel({
                 </div>
               )}
 
+              {/* 전송 버튼 */}
               <div className="px-4">
                 <button
                   className="bg-nice-blue-500 rounded-full flex items-center justify-center pt-3.5 pr-3.5 pb-3 pl-3 shadow-md disabled:opacity-50"
@@ -665,6 +665,9 @@ export function LlmChatPanel({
   );
 }
 
+/**
+ * 셀프서비스 버튼 컴포넌트
+ */
 const SharpSelfServiceButton = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {
     const Comp = "button";

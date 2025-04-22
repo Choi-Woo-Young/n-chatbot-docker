@@ -56,7 +56,7 @@ class ChatMemoryModel:
         
     
     # 대화 내용을 메모리에 저장
-    # TODO 코드 투어 - [LLM챗] 200. 대화 내용 메모리에 저장
+    # TODO 코드 투어 - [봇과채팅](백엔드) 200. 대화 내용 메모리에 저장
     # [keyword] ConversationBufferWindowMemory
     def save_context(self, chat_id, input, output):
         try:
